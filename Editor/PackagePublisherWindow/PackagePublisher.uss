@@ -1,5 +1,7 @@
-Label {
-    font-size: 20;
-    font-weight: bold;
-    text-color: rgb(68, 138, 255);
+FieldContainer {
+  marginLeft: 10px;
+  marginRight: 10px;
+  marginBottom = 10px,
+  marginTop = 10px,
+
 }

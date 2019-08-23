@@ -36,7 +36,18 @@ namespace GameFrame.Tasks.Runtime.com.gameframe.packages.Editor.PackagePublisher
 
             // A stylesheet can be added to a VisualElement.
             // The style will be applied to the VisualElement and all of its children.
-            //var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Packages/com.gameframe.packages/Editor/PackagePublisherWindow/PackagePublisher.uss");
+            var styleSheetPath = "Packages/com.gameframe.packages/Editor/PackagePublisherWindow/PackagePublisher.uss";
+            var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(styleSheetPath);
+            
+            if ( styleSheet != null )
+            {
+              root.styleSheets.Add(styleSheet);
+            }
+            else
+            {
+              Debug.LogError($"Failed to Load Style Sheet. Exists:{File.Exists(styleSheetPath)} Path:{styleSheetPath}");
+            }
+
             //VisualElement labelWithStyle = new Label("Hello World! With Style");
             //labelWithStyle.styleSheets.Add(styleSheet);
             //root.Add(labelWithStyle);
@@ -49,27 +60,10 @@ namespace GameFrame.Tasks.Runtime.com.gameframe.packages.Editor.PackagePublisher
 
             var fieldContainer = new VisualElement()
             {
-                name = "Field Container",
-                style =
-                {
-                    marginLeft = 10,
-                    marginRight = 10,
-                    marginBottom = 10,
-                    marginTop = 10,
-                    paddingLeft = 5,
-                    paddingRight = 5,
-                    paddingBottom = 5,
-                    paddingTop = 5,
-                    backgroundColor = new Color(0.8f,0.8f,0.8f),
-                    borderColor = Color.black,
-                    borderLeftWidth = 1,
-                    borderRightWidth = 1,
-                    borderBottomWidth = 1,
-                    borderTopWidth = 1
-                }
+                name = "FieldContainer"
             };
             root.Add(fieldContainer);
-            
+
             var serverField = new TextField
             {
                 label = "Server",
@@ -77,7 +71,7 @@ namespace GameFrame.Tasks.Runtime.com.gameframe.packages.Editor.PackagePublisher
             };
             serverField.Bind(so);
             fieldContainer.Add(serverField);
-            
+
             var emailField = new TextField
             {
                 label = "email",
@@ -85,7 +79,7 @@ namespace GameFrame.Tasks.Runtime.com.gameframe.packages.Editor.PackagePublisher
             };
             emailField.Bind(so);
             fieldContainer.Add(emailField);
-            
+
             var usernameField = new TextField
             {
                 label = "Username",
@@ -93,7 +87,7 @@ namespace GameFrame.Tasks.Runtime.com.gameframe.packages.Editor.PackagePublisher
             };
             usernameField.Bind(so);
             fieldContainer.Add(usernameField);
-            
+
             var passwordField = new TextField()
             {
                 label = "Password",
@@ -123,7 +117,7 @@ namespace GameFrame.Tasks.Runtime.com.gameframe.packages.Editor.PackagePublisher
                 }
             };
             root.Add(packageScrollList);
-            
+
             var buttonContainer = new VisualElement()
             {
                 name = "ButtonContainer",
@@ -143,7 +137,7 @@ namespace GameFrame.Tasks.Runtime.com.gameframe.packages.Editor.PackagePublisher
                 }
             };
             fieldContainer.Add(loginStatusLabel);
-            
+
             var loginButton = new Button(Login)
             {
                 name = "ButtonLogin",
@@ -169,7 +163,7 @@ namespace GameFrame.Tasks.Runtime.com.gameframe.packages.Editor.PackagePublisher
                 }
             };
             buttonContainer.Add(publishButton);
-            
+
             var refreshButton = new Button(Refresh)
             {
                 name = "ButtonRefresh",
@@ -201,7 +195,7 @@ namespace GameFrame.Tasks.Runtime.com.gameframe.packages.Editor.PackagePublisher
 
             Task.Run(CheckInstall);
         }
-        
+
         private void CheckInstall()
         {
             var checkTask = ExecuteShellCommandAsync("npm version", false);
@@ -225,7 +219,7 @@ namespace GameFrame.Tasks.Runtime.com.gameframe.packages.Editor.PackagePublisher
                 loginStatusLabel.text = "Connected";
             }
         }
-        
+
         /*private void InstallCli()
         {
             Debug.Log("Installing...");
@@ -245,10 +239,10 @@ namespace GameFrame.Tasks.Runtime.com.gameframe.packages.Editor.PackagePublisher
                 var split = match.Value.Split('.');
                 var buildNumber = int.Parse(split[split.Length - 1]);
                 buildNumber += 1;
-                
+
                 var newVersion = $"\"version\": \"{split[0]}.{split[1]}.{buildNumber}\"";
                 var updatedJson = Regex.Replace(json, @"""version"": ""(\d+\.)(\d+\.)(\d+)""", newVersion);
-                
+
                 File.WriteAllText(filename, updatedJson);
             }
         }*/
@@ -260,7 +254,7 @@ namespace GameFrame.Tasks.Runtime.com.gameframe.packages.Editor.PackagePublisher
             packageScrollList.Clear();
             PopulateScrollViewWithPackages(packageScrollList);
         }
-        
+
         private async void Publish()
         {
             if (selectedPackageList.Count == 0)
@@ -268,7 +262,7 @@ namespace GameFrame.Tasks.Runtime.com.gameframe.packages.Editor.PackagePublisher
                 Debug.Log("No selected packages to publish");
                 return;
             }
-            
+
             foreach (var package in selectedPackageList)
             {
                 //publishing
@@ -285,14 +279,14 @@ namespace GameFrame.Tasks.Runtime.com.gameframe.packages.Editor.PackagePublisher
                     Debug.Log($"Published {package.displayName}");
                 }
             }
-            
+
             Refresh();
         }
 
         private async void Login()
         {
             loginStatusLabel.text = "Waiting...";
-            
+
             var cmd = $"npm-cli-login -u {username} -p {password} -e {email} -r http://{address}";
             var task = ExecuteShellCommandAsync(cmd);
             await task;
@@ -300,7 +294,7 @@ namespace GameFrame.Tasks.Runtime.com.gameframe.packages.Editor.PackagePublisher
             {
                 Debug.Log("Failed login");
             }
-            
+
             cmd = $"npm config set registry http://{address}";
             task = ExecuteShellCommandAsync(cmd);
             await task;
@@ -308,12 +302,12 @@ namespace GameFrame.Tasks.Runtime.com.gameframe.packages.Editor.PackagePublisher
             {
                 Debug.Log("Failed to set registry address");
             }
-            
+
             CheckLoginAsync();
         }
 
         #endregion
-        
+
         private static List<PackageManifest> GetLocalPackageList()
         {
             var packageList = new List<PackageManifest>();
@@ -375,8 +369,8 @@ namespace GameFrame.Tasks.Runtime.com.gameframe.packages.Editor.PackagePublisher
                     }
                 });
                 scrollView.Add(toggle);
-                row += 1; 
-                
+                row += 1;
+
                 SetToggleRemoteVersionAsync(toggle,package);
             }
         }
@@ -393,7 +387,7 @@ namespace GameFrame.Tasks.Runtime.com.gameframe.packages.Editor.PackagePublisher
             {
                 remotePackage = JsonUtility.FromJson<PackageManifest>(json);
             }
-            
+
             toggle.label = remotePackage == null ? $"{toggle.label}  (not found)" : $"{toggle.label}  ({remotePackage.version})";
             toggle.SetEnabled(remotePackage == null || remotePackage.version != package.version);
             toggle.value = false;
@@ -403,14 +397,23 @@ namespace GameFrame.Tasks.Runtime.com.gameframe.packages.Editor.PackagePublisher
 
         private static bool ExecuteShellCommand(string command, bool useShell = true)
         {
+#if UNITY_EDITOR_WIN
             var commandBytes = System.Text.Encoding.Unicode.GetBytes(command);
             var encodedCommand = Convert.ToBase64String(commandBytes);
-
             var processInfo = new ProcessStartInfo("powershell.exe", $"-EncodedCommand {encodedCommand}")
             {
                 CreateNoWindow = true,
-                UseShellExecute = useShell,
+                UseShellExecute = false,
+                RedirectStandardOutput = true
             };
+#else
+            var processInfo = new ProcessStartInfo("/bin/bash", command.Replace("\\","\\\\"))
+            {
+                CreateNoWindow = true,
+                UseShellExecute = false,
+                RedirectStandardOutput = true
+            };
+#endif
 
             var process = Process.Start(processInfo);
             if (process == null)
@@ -422,21 +425,29 @@ namespace GameFrame.Tasks.Runtime.com.gameframe.packages.Editor.PackagePublisher
             process.WaitForExit();
             int exitCode = process.ExitCode;
             process.Close();
-            
+
             return exitCode == 0;
         }
 
         private static string GetShellCommandResult(string command)
         {
+#if UNITY_EDITOR_WIN
             var commandBytes = System.Text.Encoding.Unicode.GetBytes(command);
             var encodedCommand = Convert.ToBase64String(commandBytes);
-
             var processInfo = new ProcessStartInfo("powershell.exe", $"-EncodedCommand {encodedCommand}")
             {
                 CreateNoWindow = true,
                 UseShellExecute = false,
                 RedirectStandardOutput = true
             };
+#else
+            var processInfo = new ProcessStartInfo("/bin/bash", command.Replace("\\","\\\\"))
+            {
+                CreateNoWindow = true,
+                UseShellExecute = false,
+                RedirectStandardOutput = true
+            };
+#endif
 
             var process = Process.Start(processInfo);
             if (process == null)
@@ -447,15 +458,15 @@ namespace GameFrame.Tasks.Runtime.com.gameframe.packages.Editor.PackagePublisher
 
             var output = process.StandardOutput.ReadToEnd();
             process.WaitForExit();
-            
+
             int exitCode = process.ExitCode;
             process.Close();
-            
+
             if (exitCode != 0)
             {
                 return null;
             }
-            
+
             return output;
         }
 
@@ -465,7 +476,7 @@ namespace GameFrame.Tasks.Runtime.com.gameframe.packages.Editor.PackagePublisher
             await task;
             return task.Result;
         }
-        
+
         private static async Task<bool> ExecuteShellCommandAsync(string command, bool useShell = true)
         {
             var task = Task.Run(() => ExecuteShellCommand(command,useShell));
@@ -474,7 +485,7 @@ namespace GameFrame.Tasks.Runtime.com.gameframe.packages.Editor.PackagePublisher
         }
 
         #endregion
-        
+
         [Serializable]
         public class PackageManifest
         {
@@ -482,6 +493,6 @@ namespace GameFrame.Tasks.Runtime.com.gameframe.packages.Editor.PackagePublisher
             public string version;
             public string displayName;
         }
-        
+
     }
 }
