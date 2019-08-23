@@ -1,0 +1,16 @@
+{
+    "name": "com.gameframe.packages.editor",
+    "references": [
+        "com.gameframe.packages.runtime"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}

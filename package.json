@@ -1,0 +1,11 @@
+{
+  "name": "com.gameframe.packages",
+  "version": "0.0.4",
+  "displayName": "GameFrame.Packages",
+  "description": "Package for creating packages",
+  "author": {
+    "name": "Cory Leach",
+    "email": "cory.leach@gmail.com",
+    "url": "https://coryleach.com"
+  }
+}
