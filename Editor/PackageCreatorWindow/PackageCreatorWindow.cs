@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEditor.VersionControl;
 using UnityEngine;
 
-namespace GameFrame.PackageCreatorWindow.Editor
+namespace Gameframe.Packages.Editor
 {
     public class PackageCreatorWindow : EditorWindow
     {
