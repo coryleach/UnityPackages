@@ -13,17 +13,17 @@ namespace GameFrame.Tasks.Runtime.com.gameframe.packages.Editor.PackagePublisher
 {
     public class PackagePublisher : EditorWindow
     {
-        public string address = "34.73.171.51:4873";
+        public string address = "npm.coryleach.info:4873";
         public string username = "coryleach";
         public string email = "cory.leach@gmail.com";
         public string password = "";
-        
+
         private List<PackageManifest> selectedPackageList = new List<PackageManifest>();
         private ScrollView packageScrollList = null;
         private Label loginStatusLabel = null;
-        
+
         private static string ResourcePath = "Packages/com.gameframe.packages/Editor/PackagePublisherWindow/";
-        
+
         [MenuItem("GameFrame/Packages/Publisher")]
         public static void Open()
         {
