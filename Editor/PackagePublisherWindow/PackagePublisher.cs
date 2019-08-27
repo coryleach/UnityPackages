@@ -19,8 +19,8 @@ namespace Gameframe.Packages.Editor
         public string password = "";
         
         private List<PackageManifest> selectedPackageList = new List<PackageManifest>();
-        private ScrollView packageScrollList = null;
-        private Label loginStatusLabel = null;
+        private ScrollView packageScrollList;
+        private Label loginStatusLabel;
         
         private static string ResourcePath = "Packages/com.gameframe.packages/Editor/PackagePublisherWindow/";
         
@@ -59,6 +59,7 @@ namespace Gameframe.Packages.Editor
             {
                 name = "FieldContainer"
             };
+            fieldContainer.AddToClassList("BorderedContainer");
             root.Add(fieldContainer);
 
             var serverField = new TextField
@@ -94,25 +95,8 @@ namespace Gameframe.Packages.Editor
             passwordField.Bind(so);
             fieldContainer.Add(passwordField);
 
-            packageScrollList = new ScrollView()
-            {
-                style =
-                {
-                    marginLeft = 10,
-                    marginRight = 10,
-                    marginBottom = 10,
-                    marginTop = 10,
-                    paddingTop = 5,
-                    paddingBottom = 5,
-                    paddingLeft = 5,
-                    paddingRight = 5,
-                    borderLeftWidth = 1,
-                    borderRightWidth = 1,
-                    borderBottomWidth = 1,
-                    borderTopWidth = 1,
-                    borderColor = Color.black
-                }
-            };
+            packageScrollList = new ScrollView();
+            packageScrollList.AddToClassList("BorderedContainer");
             root.Add(packageScrollList);
 
             var buttonContainer = new VisualElement()
@@ -346,13 +330,8 @@ namespace Gameframe.Packages.Editor
                 var toggle = new Toggle
                 {
                     label = $"{currentPackage.displayName}:{currentPackage.version}",
-                    style =
-                    {
-                        marginTop = 1,
-                        marginBottom = 1,
-                        backgroundColor = row % 2 == 0 ? new Color(0.7f,0.7f,0.7f) : new Color(0.8f,0.8f,0.8f),
-                    }
                 };
+                toggle.AddToClassList(row % 2 == 0 ? "rowEven" : "rowOdd");
                 toggle.labelElement.style.flexGrow = 100;
                 toggle.RegisterValueChangedCallback((value) =>
                 {

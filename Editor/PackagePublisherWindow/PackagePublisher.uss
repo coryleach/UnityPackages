@@ -1,10 +1,19 @@
-FieldContainer {
-  marginLeft: 5;
-  marginRight: 5;
-  marginBottom: 5;
-  marginTop: 5;
-  borderLeftWidth: 1;
-  borderRightWidth: 1;
-  borderTopWidth: 1;
-  borderBottomWidth: 1;
+.BorderedContainer
+{
+  margin:5px;
+  border-width:1px;
+  border-color: rgba(0,0,0,0.5);
+  background-color: rgba(0,0,0,0.2);
+  border-radius: 5px;
+  padding:5px;
+}
+
+.rowEven
+{
+  background-color: rgba(0,0,0,0.20)
+}
+
+.rowOdd
+{
+  background-color: rgba(0,0,0,0.30)
 }
