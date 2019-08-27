@@ -13,7 +13,7 @@ namespace Gameframe.Packages.Editor
 {
     public class PackagePublisher : EditorWindow
     {
-        public string address = "34.73.171.51:4873";
+        public string address = "npm.coryleach.info:4873";
         public string username = "coryleach";
         public string email = "cory.leach@gmail.com";
         public string password = "";

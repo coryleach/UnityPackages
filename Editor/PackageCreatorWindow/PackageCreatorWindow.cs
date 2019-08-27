@@ -9,26 +9,26 @@ namespace Gameframe.Packages.Editor
 {
     public class PackageCreatorWindow : EditorWindow
     {
-        [MenuItem("GameFrame/Packages/Create")]
+        [MenuItem("Gameframe/Packages/Create")]
         public static void ShowWindow()
         {
             var window = GetWindow(typeof(PackageCreatorWindow), false, "Create Package");
             window.autoRepaintOnSceneChange = true;
         }
 
-        [MenuItem( "GameFrame/Packages/Documentation/Custom Packages" )]
+        [MenuItem( "Gameframe/Packages/Documentation/Custom Packages" )]
         public static void DocumentationCustomPackages()
         {
             Application.OpenURL("https://docs.unity3d.com/Manual/CustomPackages.html");
         }
 
-        [MenuItem("GameFrame/Packages/Documentation/Layout Convention")]
+        [MenuItem("Gameframe/Packages/Documentation/Layout Convention")]
         public static void DocumentationPackageLayout()
         {
             Application.OpenURL("https://docs.unity3d.com/Manual/cus-layout.html");
         }
 
-        [MenuItem( "GameFrame/Packages/Documentation/Package Manifest" )]
+        [MenuItem( "Gameframe/Packages/Documentation/Package Manifest" )]
         public static void DocumentationPackageManifest()
         {
             Application.OpenURL("https://docs.unity3d.com/Manual/upm-manifestPkg.html");
