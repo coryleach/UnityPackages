@@ -17,17 +17,20 @@ namespace GameFrame.Tasks.Runtime.com.gameframe.packages.Editor.PackagePublisher
         public string username = "coryleach";
         public string email = "cory.leach@gmail.com";
         public string password = "";
-
+        
         private List<PackageManifest> selectedPackageList = new List<PackageManifest>();
         private ScrollView packageScrollList = null;
         private Label loginStatusLabel = null;
-
+        
+        private static string ResourcePath = "Packages/com.gameframe.packages/Editor/PackagePublisherWindow/";
+        
         [MenuItem("GameFrame/Packages/Publisher")]
         public static void Open()
         {
             PackagePublisher wnd = GetWindow<PackagePublisher>();
             wnd.titleContent = new GUIContent("Package Publisher");
         }
+
 
         public void OnEnable()
         {
@@ -36,21 +39,16 @@ namespace GameFrame.Tasks.Runtime.com.gameframe.packages.Editor.PackagePublisher
 
             // A stylesheet can be added to a VisualElement.
             // The style will be applied to the VisualElement and all of its children.
-            var styleSheetPath = "Packages/com.gameframe.packages/Editor/PackagePublisherWindow/PackagePublisher.uss";
+            var styleSheetPath = ResourcePath + "PackagePublisher.uss";
             var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(styleSheetPath);
-            
             if ( styleSheet != null )
             {
               root.styleSheets.Add(styleSheet);
             }
             else
             {
-              Debug.LogError($"Failed to Load Style Sheet. Exists:{File.Exists(styleSheetPath)} Path:{styleSheetPath}");
+              Debug.LogError($"Failed to Load Style Sheet. Check uss file exists or syntax error.");
             }
-
-            //VisualElement labelWithStyle = new Label("Hello World! With Style");
-            //labelWithStyle.styleSheets.Add(styleSheet);
-            //root.Add(labelWithStyle);
 
             // Import UXML
             //var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Packages/com.gameframe.packages/Editor/PackagePublisherWindow/PackagePublisher.uxml");
