@@ -1,7 +1,7 @@
 {
   "name": "com.gameframe.packages",
   "version": "0.0.4",
-  "displayName": "GameFrame.Packages",
+  "displayName": "Gameframe.Packages",
   "description": "Package for creating packages",
   "author": {
     "name": "Cory Leach",
