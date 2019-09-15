@@ -1,6 +1,6 @@
 {
   "name": "com.gameframe.packages",
-  "version": "0.0.4",
+  "version": "1.0.0",
   "displayName": "Gameframe.Packages",
   "description": "Package for creating packages",
   "author": {
