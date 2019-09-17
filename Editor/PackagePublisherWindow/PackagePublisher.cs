@@ -173,8 +173,7 @@ namespace Gameframe.Packages.Editor
             PopulateScrollViewWithPackages(packageScrollList);
 
             CheckLoginAsync();
-
-            Task.Run(CheckInstall);
+            CheckInstall();
         }
 
         private void CheckInstall()
@@ -314,7 +313,7 @@ namespace Gameframe.Packages.Editor
 
         private async Task<List<PackageManifest>> GetLocalPackageListAsync()
         {
-            var task = Task.Run(GetLocalPackageList);
+            var task = Task.Run(GetLocalPackageListAsync);
             await task;
             return task.Result;
         }
