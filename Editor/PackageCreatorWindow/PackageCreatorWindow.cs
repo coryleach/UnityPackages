@@ -41,11 +41,11 @@ namespace Gameframe.Packages.Editor
             public class PackageAuthor
             {
                 public string name = "Cory Leach";
-                public string email = "";
-                public string url = "https://www.coryleach.com/";
+                public string email = "cory.leach@gmail.com";
+                public string url = "https://github.com/coryleach";
             }
 
-            public string name = "com.coryleach.mypackagename";
+            public string name = "com.gameframe.mypackagename";
             public string displayName = "My Package Name";
             public string version = "0.0.1";
             public string description = "";
