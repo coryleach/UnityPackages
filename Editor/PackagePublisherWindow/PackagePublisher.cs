@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+using Gameframe.Shell;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -178,7 +179,7 @@ namespace Gameframe.Packages.Editor
 
         private void CheckInstall()
         {
-            var checkTask = ExecuteShellCommandAsync("npm version", false);
+            var checkTask = ShellUtility.ExecuteCommandAsync("npm version", false);
             if (!checkTask.Result)
             {
                 Debug.Log("You need to install npm!");
@@ -188,7 +189,8 @@ namespace Gameframe.Packages.Editor
         private async void CheckLoginAsync()
         {
             loginStatusLabel.text = "Waiting...";
-            var checkTask = ExecuteShellCommandAsync("npm whoami", false);
+            /*
+            var checkTask = ShellUtility.ExecuteCommandAsync("npm whoami", false);
             await checkTask;
             if (!checkTask.Result)
             {
@@ -197,7 +199,7 @@ namespace Gameframe.Packages.Editor
             else
             {
                 loginStatusLabel.text = "Connected";
-            }
+            }*/
         }
 
         /*private void InstallCli()
@@ -248,7 +250,7 @@ namespace Gameframe.Packages.Editor
                 //publishing
                 Debug.Log($"Publishing {package.displayName} {package.version}");
                 var cmd = $"npm publish Packages/{package.name} --registry http://{address}";
-                var task = ExecuteShellCommandAsync(cmd);
+                var task = ShellUtility.ExecuteCommandAsync(cmd);
                 await task;
                 if (!task.Result)
                 {
@@ -268,7 +270,7 @@ namespace Gameframe.Packages.Editor
             loginStatusLabel.text = "Waiting...";
 
             var cmd = $"npm-cli-login -u {username} -p {password} -e {email} -r http://{address}";
-            var task = ExecuteShellCommandAsync(cmd);
+            var task = ShellUtility.ExecuteCommandAsync(cmd);
             await task;
             if (!task.Result)
             {
@@ -276,7 +278,7 @@ namespace Gameframe.Packages.Editor
             }
 
             cmd = $"npm config set registry http://{address}";
-            task = ExecuteShellCommandAsync(cmd);
+            task = ShellUtility.ExecuteCommandAsync(cmd);
             await task;
             if (!task.Result)
             {
@@ -354,7 +356,7 @@ namespace Gameframe.Packages.Editor
         {
             PackageManifest remotePackage = null;
 
-            var task = GetShellCommandResultAsync($"npm view {package.name} --json");
+            var task = ShellUtility.GetCommandResultAsync($"npm view {package.name} --json");
             await task;
             var json = task.Result;
 
@@ -367,99 +369,6 @@ namespace Gameframe.Packages.Editor
             toggle.SetEnabled(remotePackage == null || remotePackage.version != package.version);
             toggle.value = false;
         }
-
-        #region Shell Helpers
-
-        private static bool ExecuteShellCommand(string command, bool useShell = true)
-        {
-#if UNITY_EDITOR_WIN
-            var commandBytes = System.Text.Encoding.Unicode.GetBytes(command);
-            var encodedCommand = Convert.ToBase64String(commandBytes);
-            var processInfo = new ProcessStartInfo("powershell.exe", $"-EncodedCommand {encodedCommand}")
-            {
-                CreateNoWindow = true,
-                UseShellExecute = false,
-                RedirectStandardOutput = true
-            };
-#else
-            var processInfo = new ProcessStartInfo("/bin/bash", command.Replace("\\","\\\\"))
-            {
-                CreateNoWindow = true,
-                UseShellExecute = false,
-                RedirectStandardOutput = true
-            };
-#endif
-
-            var process = Process.Start(processInfo);
-            if (process == null)
-            {
-                Debug.LogError("Failed to execute command");
-                return false;
-            }
-
-            process.WaitForExit();
-            int exitCode = process.ExitCode;
-            process.Close();
-
-            return exitCode == 0;
-        }
-
-        private static string GetShellCommandResult(string command)
-        {
-#if UNITY_EDITOR_WIN
-            var commandBytes = System.Text.Encoding.Unicode.GetBytes(command);
-            var encodedCommand = Convert.ToBase64String(commandBytes);
-            var processInfo = new ProcessStartInfo("powershell.exe", $"-EncodedCommand {encodedCommand}")
-            {
-                CreateNoWindow = true,
-                UseShellExecute = false,
-                RedirectStandardOutput = true
-            };
-#else
-            var processInfo = new ProcessStartInfo("/bin/bash", command.Replace("\\","\\\\"))
-            {
-                CreateNoWindow = true,
-                UseShellExecute = false,
-                RedirectStandardOutput = true
-            };
-#endif
-
-            var process = Process.Start(processInfo);
-            if (process == null)
-            {
-                Debug.LogError("Failed to execute command");
-                return null;
-            }
-
-            var output = process.StandardOutput.ReadToEnd();
-            process.WaitForExit();
-
-            int exitCode = process.ExitCode;
-            process.Close();
-
-            if (exitCode != 0)
-            {
-                return null;
-            }
-
-            return output;
-        }
-
-        private static async Task<string> GetShellCommandResultAsync(string command)
-        {
-            var task = Task.Run(() => GetShellCommandResult(command));
-            await task;
-            return task.Result;
-        }
-
-        private static async Task<bool> ExecuteShellCommandAsync(string command, bool useShell = true)
-        {
-            var task = Task.Run(() => ExecuteShellCommand(command,useShell));
-            await task;
-            return task.Result;
-        }
-
-        #endregion
 
         [Serializable]
         public class PackageManifest
