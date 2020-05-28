@@ -1,4 +1,4 @@
-<h1 align="center">{PACKAGE.NAME} 👋</h1>
+<h1 align="center">{PACKAGE.DISPLAYNAME} 👋</h1>
 <p>
   <img alt="Version" src="https://img.shields.io/badge/version-{PACKAGE.VERSION}-blue.svg?cacheSeconds=2592000" />
   <a href="https://twitter.com/{AUTHOR.TWITTER}">
@@ -48,4 +48,4 @@ Changes between 'DOC START' and 'DOC END' will not be modified by readme update 
 Give a ⭐️ if this project helped you!
 
 ***
-_This README was generated with ❤️ by [readme-md-generator](https://github.com/kefranabg/readme-md-generator)_
+_This README was generated with ❤️ by [Gameframe.Packages](https://github.com/coryleach/unitypackages)_

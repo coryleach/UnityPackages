@@ -282,6 +282,7 @@ namespace Gameframe.Packages
       readmeText.Replace("{GITHUB.USERNAME}",packageManifest.author.github);
       readmeText.Replace("{PACKAGE.VERSION}",packageManifest.version);
       readmeText.Replace("{PACKAGE.DESCRIPTION}",packageManifest.description);
+      readmeText.Replace("{PACKAGE.DISPLAYNAME}",packageManifest.displayName);
       readmeText.Replace("{PACKAGE.NAME}",packageManifest.name);
       readmeText.Replace("{PACKAGE.USAGE}","TODO: Write Usage Documentation Here");
       readmeText.Replace("{PACKAGE.URL}",$"https://github.com/{packageManifest.author.github}/{packageManifest.repositoryName}.git#{packageManifest.version}");
@@ -476,6 +477,7 @@ namespace Gameframe.Packages
       readmeText.Replace("{GITHUB.USERNAME}",packageManifest.author.github);
       readmeText.Replace("{PACKAGE.VERSION}",packageManifest.version);
       readmeText.Replace("{PACKAGE.DESCRIPTION}",packageManifest.description);
+      readmeText.Replace("{PACKAGE.DISPLAYNAME}",packageManifest.displayName);
       readmeText.Replace("{PACKAGE.NAME}",packageManifest.name);
       readmeText.Replace("{PACKAGE.USAGE}","TODO: Write Usage Documentation Here");
       readmeText.Replace("{PACKAGE.URL}",$"https://github.com/{packageManifest.author.github}/{packageManifest.repositoryName}.git#{packageManifest.version}");
