@@ -181,6 +181,12 @@ namespace Gameframe.Packages
     private void ManagePackageGUI()
     {
       selectedPackageIndex = EditorGUILayout.Popup("Package", selectedPackageIndex, packageNames);
+      //Validate index
+      if (selectedPackageIndex < 0 || selectedPackageIndex >= embededPackages.Count)
+      {
+        return;
+      }
+      
       var package = embededPackages[selectedPackageIndex];
       EditorGUILayout.BeginVertical("box");
       EditorGUILayout.LabelField(package.displayName);
@@ -361,11 +367,11 @@ namespace Gameframe.Packages
       readmeText.Replace("{PACKAGE.URL}",$"https://github.com/{packageManifest.author.github}/{packageManifest.repositoryName}.git#{packageManifest.version}");
 
       var social = new StringBuilder();
-      if (string.IsNullOrEmpty(packageManifest.author.twitter))
+      if (!string.IsNullOrEmpty(packageManifest.author.twitter))
       {
         social.AppendLine($"* Twitter: [@{packageManifest.author.twitter}](https://twitter.com/{packageManifest.author.twitter})");
       }
-      if (string.IsNullOrEmpty(packageManifest.author.github))
+      if (!string.IsNullOrEmpty(packageManifest.author.github))
       {
         social.AppendLine($"* Github: [@{packageManifest.author.github}](https://github.com/{packageManifest.author.github})");
       }
@@ -399,8 +405,8 @@ namespace Gameframe.Packages
         $"{{ \"name\": \"{testAssemblyName}\", \"references\": [ \"{assemblyName}\" ], \"optionalUnityReferences\": [\"TestAssemblies\"], \"includePlatforms\": [], \"excludePlatforms\": [] }}");
 
       AssetDatabase.Refresh();
-
       EditorUtility.DisplayDialog("Package Created", "Done!", "Ok");
+      Refresh();
     }
   }
 }
