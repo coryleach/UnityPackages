@@ -1,19 +1,19 @@
-<h1 align="center">com.gameframe.mypackagename 👋</h1>
+<h1 align="center">{PACKAGE.NAME} 👋</h1>
 <p>
-  <img alt="Version" src="https://img.shields.io/badge/version-1.0.0-blue.svg?cacheSeconds=2592000" />
-  <a href="https://twitter.com/coryleach">
-    <img alt="Twitter: coryleach" src="https://img.shields.io/twitter/follow/coryleach.svg?style=social" target="_blank" />
+  <img alt="Version" src="https://img.shields.io/badge/version-{PACKAGE.VERSION}-blue.svg?cacheSeconds=2592000" />
+  <a href="https://twitter.com/{AUTHOR.TWITTER}">
+    <img alt="Twitter: {TWITTER.USERNAME}" src="https://img.shields.io/twitter/follow/{TWITTER.USERNAME}.svg?style=social" target="_blank" />
   </a>
 </p>
 
-My Test Package
+{PACKAGE.DESCRIPTION}
 
 ## Quick Package Install
 
 #### Using UnityPackageManager (for Unity 2019.3 or later)
 Open the package manager window (menu: Window > Package Manager)<br/>
 Select "Add package from git URL...", fill in the pop-up with the following link:<br/>
-https://github.com/coryleach/RepositoryName.git#1.0.0<br/>
+{PACKAGE.URL}<br/>
 
 #### Using UnityPackageManager (for Unity 2019.1 or later)
 
@@ -21,7 +21,7 @@ Find the manifest.json file in the Packages folder of your project and edit it t
 ```js
 {
   "dependencies": {
-    "com.gameframe.mypackagename": "https://github.com/coryleach/RepositoryName.git#1.0.0",
+    "{PACKAGE.NAME}": "{PACKAGE.URL}",
     ...
   },
 }
@@ -29,14 +29,13 @@ Find the manifest.json file in the Packages folder of your project and edit it t
 
 ## Usage
 
-TODO: Write Usage Documentation Here
+{PACKAGE.USAGE}
 
 ## Author
 
-👤 **Cory Leach**
+👤 **{AUTHOR.NAME}**
 
-* Twitter: [@coryleach](https://twitter.com/coryleach)
-* Github: [@coryleach](https://github.com/coryleach)
+{AUTHOR.SOCIAL}
 
 ## Show your support
 
