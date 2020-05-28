@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Gameframe.Shell;
@@ -12,7 +10,7 @@ using Debug = UnityEngine.Debug;
 
 namespace Gameframe.Packages.Editor
 {
-    public class PackagePublisher : EditorWindow
+    public class PackageNpmPublisher : EditorWindow
     {
         public string address = "npm.coryleach.info:4873";
         public string username = "coryleach";
@@ -24,11 +22,22 @@ namespace Gameframe.Packages.Editor
         private Label loginStatusLabel;
         
         private static string ResourcePath = "Packages/com.gameframe.packages/Editor/PackagePublisherWindow/";
+
+        private InstallStatus installStatus = InstallStatus.Unknown;
+
+        private const string StyleSheetFilename = "PackageNpmPublisher.uss";
+        
+        public enum InstallStatus
+        {
+            Unknown,
+            Installed,
+            NotFound
+        }
         
         [MenuItem("Gameframe/Packages/Publisher")]
         public static void Open()
         {
-            PackagePublisher wnd = GetWindow<PackagePublisher>();
+            PackageNpmPublisher wnd = GetWindow<PackageNpmPublisher>();
             wnd.titleContent = new GUIContent("Package Publisher");
         }
 
@@ -39,7 +48,7 @@ namespace Gameframe.Packages.Editor
 
             // A stylesheet can be added to a VisualElement.
             // The style will be applied to the VisualElement and all of its children.
-            var styleSheetPath = ResourcePath + "PackagePublisher.uss";
+            var styleSheetPath = ResourcePath + StyleSheetFilename;
             var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(styleSheetPath);
             if ( styleSheet != null )
             {
@@ -173,33 +182,23 @@ namespace Gameframe.Packages.Editor
             selectedPackageList = new List<PackageManifest>();
             PopulateScrollViewWithPackages(packageScrollList);
 
-            CheckLoginAsync();
+            CheckLogin();
             CheckInstall();
         }
 
-        private void CheckInstall()
+        private async void CheckInstall()
         {
-            var checkTask = ShellUtility.ExecuteCommandAsync("npm version", false);
-            if (!checkTask.Result)
-            {
-                Debug.Log("You need to install npm!");
-            }
+            installStatus = InstallStatus.Unknown;
+            var checkTask = await ShellUtility.ExecuteCommandAsync("npm version");
+            installStatus = !checkTask ? InstallStatus.NotFound : InstallStatus.Installed;
         }
 
-        private async void CheckLoginAsync()
+        private async void CheckLogin()
         {
             loginStatusLabel.text = "Waiting...";
-            /*
-            var checkTask = ShellUtility.ExecuteCommandAsync("npm whoami", false);
+            var checkTask = ShellUtility.ExecuteCommandAsync("npm whoami");
             await checkTask;
-            if (!checkTask.Result)
-            {
-                loginStatusLabel.text = "Disconnected";
-            }
-            else
-            {
-                loginStatusLabel.text = "Connected";
-            }*/
+            loginStatusLabel.text = !checkTask.Result ? "Disconnected" : "Connected";
         }
 
         /*private void InstallCli()
@@ -285,7 +284,7 @@ namespace Gameframe.Packages.Editor
                 Debug.Log("Failed to set registry address");
             }
 
-            CheckLoginAsync();
+            CheckLogin();
         }
 
         #endregion
@@ -369,14 +368,6 @@ namespace Gameframe.Packages.Editor
             toggle.SetEnabled(remotePackage == null || remotePackage.version != package.version);
             toggle.value = false;
         }
-
-        [Serializable]
-        public class PackageManifest
-        {
-            public string name;
-            public string version;
-            public string displayName;
-        }
-
+        
     }
 }
