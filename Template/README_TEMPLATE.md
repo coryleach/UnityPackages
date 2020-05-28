@@ -27,9 +27,15 @@ Find the manifest.json file in the Packages folder of your project and edit it t
 }
 ```
 
-## Usage
+<!-- DOC-START -->
+<!-- 
+Changes between 'DOC START' and 'DOC END' will not be modified by readme update scripts
+-->
 
+## Usage
 {PACKAGE.USAGE}
+
+<!-- DOC-END -->
 
 ## Author
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Gameframe.Packages.Editor;
 using Gameframe.Packages.Utility;
@@ -24,7 +25,10 @@ namespace Gameframe.Packages
 
     private ScriptableObject target = null;
     private SerializedObject serializedObject = null;
-
+    private Vector2 scrollPt;
+    private string[] toolbar = {"Manage", "Embed", "Create"};
+    private int tab = 0;
+    
     private void OnEnable()
     {
       target = this;
@@ -38,7 +42,7 @@ namespace Gameframe.Packages
       Refresh();
     }
 
-    private void GetSourcePackages()
+    private void UpdateSourcePackages()
     {
       var sourcePath = PackageSettings.SourcePath;
       if (string.IsNullOrEmpty(sourcePath))
@@ -59,10 +63,10 @@ namespace Gameframe.Packages
         }
       }
 
-      UpdateSourcePackages();
+      CheckEmbededStatus();
     }
 
-    private void UpdateSourcePackages()
+    private void CheckEmbededStatus()
     {
       foreach (var sourcePackage in sourcePackages)
       {
@@ -77,7 +81,7 @@ namespace Gameframe.Packages
       }
     }
 
-    private async void GetEmbeddedPackages()
+    private async void UpdateEmbeddedPackages()
     {
       var request = Client.List();
 
@@ -98,7 +102,7 @@ namespace Gameframe.Packages
       //Get All Embeded Packages
       embededPackages = request.Result.Where(x => x.source == PackageSource.Embedded).ToList();
       packageNames = embededPackages.Select(x => x.displayName).ToArray();
-      UpdateSourcePackages();
+      CheckEmbededStatus();
       EditorUtility.SetDirty(this);
 
       
@@ -112,14 +116,28 @@ namespace Gameframe.Packages
       return result;
     }
 
-    [ContextMenu("Refresh")]
     private void Refresh()
     {
-      GetEmbeddedPackages();
-      GetSourcePackages();
+      UpdateEmbeddedPackages();
+      UpdateSourcePackages();
     }
 
-    private Vector2 scrollPt;
+    private void OnGUI()
+    {
+      tab = GUILayout.Toolbar(tab, toolbar);
+      switch (tab)
+      {
+        case 0:
+          ManagePackageGUI();
+          break;
+        case 1:
+          EmbedPackageGUI();
+          break;
+        case 2:
+          CreatePackageGUI();
+          break;
+      }
+    }
 
     private void EmbedPackageGUI()
     {
@@ -156,26 +174,8 @@ namespace Gameframe.Packages
       }
 
       EditorGUILayout.EndScrollView();
-    }
 
-    private string[] toolbar = {"Manage", "Embed", "Create"};
-    private int tab = 0;
-
-    private void OnGUI()
-    {
-      tab = GUILayout.Toolbar(tab, toolbar);
-      switch (tab)
-      {
-        case 0:
-          ManagePackageGUI();
-          break;
-        case 1:
-          EmbedPackageGUI();
-          break;
-        case 2:
-          CreatePackageGUI();
-          break;
-      }
+      RefreshGUI();
     }
 
     private void ManagePackageGUI()
@@ -197,6 +197,120 @@ namespace Gameframe.Packages
       EditorGUILayout.LabelField(package.version);
       EditorGUILayout.LabelField(package.status.ToString());
       EditorGUILayout.EndVertical();
+
+      if (GUILayout.Button("Update Readme"))
+      {
+        UpdateReadme(package);
+      }
+      
+      RefreshGUI();
+    }
+
+    private const string StartDocTag = "<!-- DOC-START -->";
+    private const string EndDocTag = "<!-- DOC-END -->";
+    
+    private static string ExtractString(string text)
+    {
+      var startIndex = text.IndexOf(StartDocTag, StringComparison.Ordinal) + StartDocTag.Length;
+      var endIndex = text.IndexOf(EndDocTag, startIndex, StringComparison.Ordinal);
+      
+      if (startIndex == -1 || endIndex == -1)
+      {
+        return string.Empty;
+      }
+      
+      return text.Substring(startIndex, endIndex - startIndex);
+    }
+    
+    private async void UpdateReadme(PackageInfo packageInfo)
+    {
+      var myPkg = await GetMyPackageInfoAsync();
+      var readmeTemplatePath = $"{myPkg.assetPath}/Template/README_TEMPLATE.md";
+
+      var readmePath = $"{packageInfo.assetPath}/README";
+      if (!File.Exists(readmePath))
+      {
+        readmePath = $"{packageInfo.assetPath}/README.md";
+        if (!File.Exists(readmePath))
+        {
+          Debug.LogError("Unable to find README or README.md at package asset path");
+          return;
+        }
+      }
+
+      var manifestPath = $"{packageInfo.assetPath}/package.json";
+      if (!File.Exists(manifestPath))
+      {
+        Debug.LogError($"Unable to find package.json at {packageInfo.assetPath}");
+        return;
+      }
+
+      PackageManifest packageManifest = null;
+
+      try
+      {
+        packageManifest = JsonUtility.FromJson<PackageManifest>(File.ReadAllText(manifestPath));
+        if (packageManifest == null)
+        {
+          Debug.LogError("Failed to read package manifest. FromJson returned null on file text.");
+          return;
+        }
+      }
+      catch (Exception e)
+      {
+        Debug.LogError("Failed to read package manifest format.");
+        Debug.LogException(e);
+        return;
+      }
+
+      if (!ValidatePackageManifest(packageManifest))
+      {
+        Debug.LogError("Update package manifest with required values before updating the readme");
+        return;
+      }
+      
+      var oldText = File.ReadAllText(readmePath);
+      oldText = ExtractString(oldText);
+
+      var templateText = File.ReadAllText(readmeTemplatePath);
+      var replaceText = ExtractString(templateText);
+      templateText = templateText.Replace(replaceText, oldText);
+      
+      var readmeText = new StringBuilder(templateText);
+      readmeText.Replace("{TWITTER.USERNAME}",packageManifest.author.twitter);
+      readmeText.Replace("{AUTHOR.NAME}",packageManifest.author.name);
+      readmeText.Replace("{GITHUB.USERNAME}",packageManifest.author.github);
+      readmeText.Replace("{PACKAGE.VERSION}",packageManifest.version);
+      readmeText.Replace("{PACKAGE.DESCRIPTION}",packageManifest.description);
+      readmeText.Replace("{PACKAGE.NAME}",packageManifest.name);
+      readmeText.Replace("{PACKAGE.USAGE}","TODO: Write Usage Documentation Here");
+      readmeText.Replace("{PACKAGE.URL}",$"https://github.com/{packageManifest.author.github}/{packageManifest.repositoryName}.git#{packageManifest.version}");
+
+      var social = new StringBuilder();
+      if (!string.IsNullOrEmpty(packageManifest.author.twitter))
+      {
+        social.AppendLine($"* Twitter: [@{packageManifest.author.twitter}](https://twitter.com/{packageManifest.author.twitter})");
+      }
+      if (!string.IsNullOrEmpty(packageManifest.author.github))
+      {
+        social.AppendLine($"* Github: [@{packageManifest.author.github}](https://github.com/{packageManifest.author.github})");
+      }
+      readmeText.Replace("{AUTHOR.SOCIAL}", social.ToString());
+      
+      File.WriteAllText(readmePath,readmeText.ToString());
+
+      EditorUtility.DisplayDialog("Update Readme", "Done", "OK");
+    }
+    
+    private void RefreshGUI()
+    {
+      EditorGUILayout.BeginHorizontal();
+      GUILayout.FlexibleSpace();
+      if (GUILayout.Button("Refresh"))
+      {
+        Refresh();
+      }
+      EditorGUILayout.EndHorizontal();
     }
 
     private void CreatePackageGUI()
@@ -271,7 +385,7 @@ namespace Gameframe.Packages
 
     private void CreateEmbeded()
     {
-      if (ValidatePackageManifest())
+      if (ValidatePackageManifest(packageManifest))
       {
         CreateAt($"{Directory.GetCurrentDirectory()}/Packages");
       }
@@ -279,36 +393,36 @@ namespace Gameframe.Packages
 
     private void CreateInSources()
     {
-      if (ValidatePackageManifest())
+      if (ValidatePackageManifest(packageManifest))
       {
         CreateAt(PackageSettings.SourcePath);
       }
     }
 
-    private bool ValidatePackageManifest()
+    private bool ValidatePackageManifest(PackageManifest manifest)
     {
       string error = null;
-      if (string.IsNullOrEmpty(packageManifest.description))
+      if (string.IsNullOrEmpty(manifest.description))
       {
         error = "Package Description Required";
       }
-      else if (string.IsNullOrEmpty(packageManifest.version))
+      else if (string.IsNullOrEmpty(manifest.version))
       {
         error = "Package Version Required";
       }
-      else if (string.IsNullOrEmpty(packageManifest.repositoryName))
+      else if (string.IsNullOrEmpty(manifest.repositoryName))
       {
         error ="Package Repository Name Required";
       }
-      else if (string.IsNullOrEmpty(packageManifest.displayName))
+      else if (string.IsNullOrEmpty(manifest.displayName))
       {
         error = "Package display Name Required";
       }
-      else if (string.IsNullOrEmpty(packageManifest.name))
+      else if (string.IsNullOrEmpty(manifest.name))
       {
         error = "Package Name Required";
       }
-      else if (string.IsNullOrEmpty(packageManifest.author.github))
+      else if (string.IsNullOrEmpty(manifest.author.github))
       {
         error = "Github username required to build github links";
       }
