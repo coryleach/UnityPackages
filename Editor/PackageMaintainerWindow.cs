@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Gameframe.Packages.Editor;
 using Gameframe.Packages.Utility;
@@ -26,8 +24,8 @@ namespace Gameframe.Packages
     private ScriptableObject target = null;
     private SerializedObject serializedObject = null;
     private Vector2 scrollPt;
-    private string[] toolbar = {"Manage", "Embed", "Create"};
-    private int tab = 0;
+    private string[] toolbar = {"Maintain", "Embed", "Create"};
+    public int tab = 0;
     
     private void OnEnable()
     {
@@ -128,7 +126,7 @@ namespace Gameframe.Packages
       switch (tab)
       {
         case 0:
-          ManagePackageGUI();
+          MaintainPackageGUI();
           break;
         case 1:
           EmbedPackageGUI();
@@ -178,9 +176,19 @@ namespace Gameframe.Packages
       RefreshGUI();
     }
 
-    private void ManagePackageGUI()
+    private PackageManifest maintainPackageManifest = null;
+    
+    private void MaintainPackageGUI()
     {
+      EditorGUI.BeginChangeCheck();
+      
       selectedPackageIndex = EditorGUILayout.Popup("Package", selectedPackageIndex, packageNames);
+      if (EditorGUI.EndChangeCheck())
+      {
+        //Index Changed
+        maintainPackageManifest = null;
+      }
+      
       //Validate index
       if (selectedPackageIndex < 0 || selectedPackageIndex >= embededPackages.Count)
       {
@@ -188,16 +196,81 @@ namespace Gameframe.Packages
       }
       
       var package = embededPackages[selectedPackageIndex];
-      EditorGUILayout.BeginVertical("box");
-      EditorGUILayout.LabelField(package.displayName);
-      EditorGUILayout.LabelField(package.source.ToString());
-      EditorGUILayout.LabelField(package.assetPath);
-      EditorGUILayout.LabelField(package.resolvedPath);
-      EditorGUILayout.LabelField(package.type);
-      EditorGUILayout.LabelField(package.version);
-      EditorGUILayout.LabelField(package.status.ToString());
+      
+      //Need to get the json for the package
+      if (maintainPackageManifest == null)
+      {
+        var json = File.ReadAllText($"{package.assetPath}/package.json");
+        maintainPackageManifest = JsonUtility.FromJson<PackageManifest>(json);
+      }
+      
+      var rect = EditorGUILayout.BeginVertical("box");
+      EditorGUILayout.LabelField("Name",package.name);
+      EditorGUILayout.LabelField("DisplayName",package.displayName);
+      EditorGUILayout.LabelField("Source",package.source.ToString());
+      EditorGUILayout.LabelField("Asset Path",package.assetPath);
+      EditorGUILayout.LabelField("Resolved Path",package.resolvedPath);
+      EditorGUILayout.LabelField("Type",package.type);
+      EditorGUILayout.LabelField("Version",package.version);
+      EditorGUILayout.LabelField("Status",package.status.ToString());
       EditorGUILayout.EndVertical();
+      
+      if (Event.current.type == EventType.MouseUp && Event.current.button == 0 && rect.Contains(Event.current.mousePosition))
+      {
+        var asset = AssetDatabase.LoadAssetAtPath<TextAsset>($"{package.assetPath}/package.json");
+        Selection.activeObject = asset;
+      }
+      
+      EditorGUILayout.BeginVertical("box");
+      maintainPackageManifest.repositoryName = EditorGUILayout.TextField("RepositoryName", maintainPackageManifest.repositoryName);
+      maintainPackageManifest.author.name = EditorGUILayout.TextField("Author Name",maintainPackageManifest.author.name);
+      maintainPackageManifest.author.email = EditorGUILayout.TextField("Author E-Mail",maintainPackageManifest.author.email);
+      maintainPackageManifest.author.url = EditorGUILayout.TextField("Author URL",maintainPackageManifest.author.url);
 
+      maintainPackageManifest.author.twitter = EditorGUILayout.TextField("Twitter",maintainPackageManifest.author.twitter);
+      maintainPackageManifest.author.github = EditorGUILayout.TextField("GitHub",maintainPackageManifest.author.github);
+      
+      var linkStyle = new GUIStyle(EditorStyles.label);
+      linkStyle.wordWrap = false;
+      linkStyle.hover.textColor = new Color(0x00 / 255f, 0x78 / 255f, 0xDA / 255f, 1f);
+      linkStyle.normal.textColor = new Color(0,0,1);
+      
+      if (!string.IsNullOrEmpty(maintainPackageManifest.author.twitter))
+      {
+        var twitterUrl = PackageUtility.TwitterUrl(maintainPackageManifest.author.twitter);
+        if (GUILayout.Button(twitterUrl,linkStyle))
+        {
+          Application.OpenURL(twitterUrl);
+        }
+      }
+      
+      if (!string.IsNullOrEmpty(maintainPackageManifest.author.github))
+      {
+        var githubUrl = PackageUtility.GithubUrl(maintainPackageManifest.author.github);
+        if (GUILayout.Button(githubUrl, linkStyle))
+        {
+          Application.OpenURL(githubUrl);
+        }
+        EditorGUILayout.LabelField(PackageUtility.PackageUrl(maintainPackageManifest.author.github,maintainPackageManifest.repositoryName,maintainPackageManifest.version));
+      }
+      
+      EditorGUILayout.EndVertical();
+      
+      if (GUILayout.Button("Update package.json"))
+      {
+        var path = $"{package.assetPath}/package.json";
+        var json = File.ReadAllText(path);
+        var jsonNode = SimpleJSON.JSON.Parse(json);
+        jsonNode["repositoryName"] = maintainPackageManifest.repositoryName;
+        jsonNode["author"]["name"] = maintainPackageManifest.author.name;
+        jsonNode["author"]["email"] = maintainPackageManifest.author.email;
+        jsonNode["author"]["url"] = maintainPackageManifest.author.url;
+        jsonNode["author"]["github"] = maintainPackageManifest.author.github;
+        jsonNode["author"]["twitter"] = maintainPackageManifest.author.twitter;
+        File.WriteAllText(path,jsonNode.ToString());
+        maintainPackageManifest = null;
+      }
+      
       if (GUILayout.Button("Update Readme"))
       {
         UpdateReadme(package);

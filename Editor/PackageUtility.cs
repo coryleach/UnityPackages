@@ -38,6 +38,21 @@ namespace Gameframe.Packages
             licenseBuilder.Replace("{AUTHOR.NAME}",packageManifest.author.name);
             return licenseBuilder.ToString();
         }
+
+        public static string GithubUrl(string username)
+        {
+            return $"https://github.com/{username}";
+        }
+        
+        public static string TwitterUrl(string username)
+        {
+            return $"https://twitter.com/{username}";
+        }
+
+        public static string PackageUrl(string github, string repository, string version)
+        {
+           return $"https://github.com/{github}/{repository}.git#{version}";
+        }
         
         public static string CreateReadmeText(string text, PackageManifest packageManifest)
         {
@@ -56,16 +71,16 @@ namespace Gameframe.Packages
             readmeText.Replace("{PACKAGE.DISPLAYNAME}",packageManifest.displayName);
             readmeText.Replace("{PACKAGE.NAME}",packageManifest.name);
             readmeText.Replace("{PACKAGE.USAGE}","TODO: Write Usage Documentation Here");
-            readmeText.Replace("{PACKAGE.URL}",$"https://github.com/{packageManifest.author.github}/{packageManifest.repositoryName}.git#{packageManifest.version}");
+            readmeText.Replace("{PACKAGE.URL}", PackageUrl(packageManifest.author.github, packageManifest.repositoryName, packageManifest.version));
 
             var social = new StringBuilder();
             if (!string.IsNullOrEmpty(packageManifest.author.twitter))
             {
-                social.AppendLine($"* Twitter: [@{packageManifest.author.twitter}](https://twitter.com/{packageManifest.author.twitter})");
+                social.AppendLine($"* Twitter: [@{packageManifest.author.twitter}]({TwitterUrl(packageManifest.author.twitter)})");
             }
             if (!string.IsNullOrEmpty(packageManifest.author.github))
             {
-                social.AppendLine($"* Github: [@{packageManifest.author.github}](https://github.com/{packageManifest.author.github})");
+                social.AppendLine($"* Github: [@{packageManifest.author.github}]({GithubUrl(packageManifest.author.github)})");
             }
             readmeText.Replace("{AUTHOR.SOCIAL}", social.ToString());
 

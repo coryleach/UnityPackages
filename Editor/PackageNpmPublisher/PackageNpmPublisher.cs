@@ -34,12 +34,14 @@ namespace Gameframe.Packages.Editor
             NotFound
         }
         
-        [MenuItem("Gameframe/Packages/Publisher")]
+        //Commenting this out.
+        //I have no plans to continue to support this for now
+        /*[MenuItem("Gameframe/Packages/Publisher")]
         public static void Open()
         {
             PackageNpmPublisher wnd = GetWindow<PackageNpmPublisher>();
             wnd.titleContent = new GUIContent("Package Publisher");
-        }
+        }*/
 
         public void OnEnable()
         {
