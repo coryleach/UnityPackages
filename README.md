@@ -1,7 +1,7 @@
 <h1 align="center">Gameframe.Packages 👋</h1>
 <p>
   <img alt="Version" src="https://img.shields.io/badge/version-1.0.0-blue.svg?cacheSeconds=2592000" />
-  <a href="https://twitter.com/{AUTHOR.TWITTER}">
+  <a href="https://twitter.com/Cory Leach">
     <img alt="Twitter: coryleach" src="https://img.shields.io/twitter/follow/coryleach.svg?style=social" target="_blank" />
   </a>
 </p>

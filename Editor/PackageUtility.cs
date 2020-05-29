@@ -64,6 +64,7 @@ namespace Gameframe.Packages
       
             var readmeText = new StringBuilder(text);
             readmeText.Replace("{TWITTER.USERNAME}",packageManifest.author.twitter);
+            readmeText.Replace("{AUTHOR.TWITTER}",packageManifest.author.name);
             readmeText.Replace("{AUTHOR.NAME}",packageManifest.author.name);
             readmeText.Replace("{GITHUB.USERNAME}",packageManifest.author.github);
             readmeText.Replace("{PACKAGE.VERSION}",packageManifest.version);
