@@ -206,22 +206,6 @@ namespace Gameframe.Packages
       RefreshGUI();
     }
 
-    private const string StartDocTag = "<!-- DOC-START -->";
-    private const string EndDocTag = "<!-- DOC-END -->";
-    
-    private static string ExtractString(string text)
-    {
-      var startIndex = text.IndexOf(StartDocTag, StringComparison.Ordinal) + StartDocTag.Length;
-      var endIndex = text.IndexOf(EndDocTag, startIndex, StringComparison.Ordinal);
-      
-      if (startIndex == -1 || endIndex == -1)
-      {
-        return string.Empty;
-      }
-      
-      return text.Substring(startIndex, endIndex - startIndex);
-    }
-    
     private async void UpdateReadme(PackageInfo packageInfo)
     {
       var myPkg = await GetMyPackageInfoAsync();
@@ -270,35 +254,12 @@ namespace Gameframe.Packages
       }
       
       var oldText = File.ReadAllText(readmePath);
-      oldText = ExtractString(oldText);
-
       var templateText = File.ReadAllText(readmeTemplatePath);
-      var replaceText = ExtractString(templateText);
-      templateText = templateText.Replace(replaceText, oldText);
-      
-      var readmeText = new StringBuilder(templateText);
-      readmeText.Replace("{TWITTER.USERNAME}",packageManifest.author.twitter);
-      readmeText.Replace("{AUTHOR.NAME}",packageManifest.author.name);
-      readmeText.Replace("{GITHUB.USERNAME}",packageManifest.author.github);
-      readmeText.Replace("{PACKAGE.VERSION}",packageManifest.version);
-      readmeText.Replace("{PACKAGE.DESCRIPTION}",packageManifest.description);
-      readmeText.Replace("{PACKAGE.DISPLAYNAME}",packageManifest.displayName);
-      readmeText.Replace("{PACKAGE.NAME}",packageManifest.name);
-      readmeText.Replace("{PACKAGE.USAGE}","TODO: Write Usage Documentation Here");
-      readmeText.Replace("{PACKAGE.URL}",$"https://github.com/{packageManifest.author.github}/{packageManifest.repositoryName}.git#{packageManifest.version}");
+      templateText = PackageUtility.PatchReadmeText(oldText, templateText);
 
-      var social = new StringBuilder();
-      if (!string.IsNullOrEmpty(packageManifest.author.twitter))
-      {
-        social.AppendLine($"* Twitter: [@{packageManifest.author.twitter}](https://twitter.com/{packageManifest.author.twitter})");
-      }
-      if (!string.IsNullOrEmpty(packageManifest.author.github))
-      {
-        social.AppendLine($"* Github: [@{packageManifest.author.github}](https://github.com/{packageManifest.author.github})");
-      }
-      readmeText.Replace("{AUTHOR.SOCIAL}", social.ToString());
+      var readmeText = PackageUtility.CreateReadmeText(templateText, packageManifest);
       
-      File.WriteAllText(readmePath,readmeText.ToString());
+      File.WriteAllText(readmePath,readmeText);
 
       EditorUtility.DisplayDialog("Update Readme", "Done", "OK");
     }
@@ -437,7 +398,6 @@ namespace Gameframe.Packages
 
       return true;
     }
-    
 
     private async void CreateAt(string path)
     {
@@ -471,35 +431,12 @@ namespace Gameframe.Packages
       var readmePath = $"{packagePath}/README.md";
       var licensePath = $"{packagePath}/LICENSE.md";
 
-      var readmeText = new StringBuilder(File.ReadAllText(readmeTemplatePath));
-      readmeText.Replace("{TWITTER.USERNAME}",packageManifest.author.twitter);
-      readmeText.Replace("{AUTHOR.NAME}",packageManifest.author.name);
-      readmeText.Replace("{GITHUB.USERNAME}",packageManifest.author.github);
-      readmeText.Replace("{PACKAGE.VERSION}",packageManifest.version);
-      readmeText.Replace("{PACKAGE.DESCRIPTION}",packageManifest.description);
-      readmeText.Replace("{PACKAGE.DISPLAYNAME}",packageManifest.displayName);
-      readmeText.Replace("{PACKAGE.NAME}",packageManifest.name);
-      readmeText.Replace("{PACKAGE.USAGE}","TODO: Write Usage Documentation Here");
-      readmeText.Replace("{PACKAGE.URL}",$"https://github.com/{packageManifest.author.github}/{packageManifest.repositoryName}.git#{packageManifest.version}");
-
-      var social = new StringBuilder();
-      if (!string.IsNullOrEmpty(packageManifest.author.twitter))
-      {
-        social.AppendLine($"* Twitter: [@{packageManifest.author.twitter}](https://twitter.com/{packageManifest.author.twitter})");
-      }
-      if (!string.IsNullOrEmpty(packageManifest.author.github))
-      {
-        social.AppendLine($"* Github: [@{packageManifest.author.github}](https://github.com/{packageManifest.author.github})");
-      }
-      readmeText.Replace("{AUTHOR.SOCIAL}", social.ToString());
-      
-      var licenseText = new StringBuilder(File.ReadAllText(licenseTemplatePath));
-      licenseText.Replace("{DATE.YEAR}",DateTime.Now.Year.ToString());
-      licenseText.Replace("{AUTHOR.NAME}",packageManifest.author.name);
+      var readmeText = PackageUtility.CreateReadmeText(readmeTemplatePath, packageManifest);
+      var licenseText = PackageUtility.CreateLicenseText(File.ReadAllText(licenseTemplatePath),packageManifest);
       
       File.WriteAllText(manifestPath, json);
-      File.WriteAllText(readmePath, readmeText.ToString());
-      File.WriteAllText(licensePath, licenseText.ToString());
+      File.WriteAllText(readmePath, readmeText);
+      File.WriteAllText(licensePath, licenseText);
 
       var assemblyName = packageManifest.name;
       var editorAssemblyName = $"{packageManifest.name}.Editor";
@@ -524,5 +461,6 @@ namespace Gameframe.Packages
       EditorUtility.DisplayDialog("Package Created", "Done!", "Ok");
       Refresh();
     }
+    
   }
 }
