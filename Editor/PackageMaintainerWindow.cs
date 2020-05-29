@@ -255,6 +255,7 @@ namespace Gameframe.Packages
         if (GUILayout.Button(packageUrl, linkStyle))
         {
           Application.OpenURL(packageUrl);
+        }
       }
       
       EditorGUILayout.EndVertical();
