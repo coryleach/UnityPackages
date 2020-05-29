@@ -167,13 +167,15 @@ namespace Gameframe.Packages
             var dest = $"{Application.dataPath}/../Packages/{sourcePkg.directoryInfo.Name}";
             if (!ShellUtility.CreateSymbolicLink(source, dest))
             {
-              Debug.Log("Failed to create symbolic link.");
               EditorApplication.Beep();
+              EditorUtility.DisplayDialog("Package Embed", "Failed to create symbolic link. Package was not embedded.",
+                "OK");
             }
             else
             {
               refreshAssets = true;
-              Debug.Log("Package Embed Complete");
+              EditorUtility.DisplayDialog("Package Embed", "Done",
+                "OK");
             }
           }
           catch ( Exception e )
