@@ -144,6 +144,7 @@ namespace Gameframe.Packages
         Refresh();
       }
 
+      bool refreshAssets = false;
       scrollPt = EditorGUILayout.BeginScrollView(scrollPt, GUILayout.ExpandHeight(false));
       foreach (var sourcePkg in sourcePackages)
       {
@@ -162,11 +163,17 @@ namespace Gameframe.Packages
           try
           {
             //Create a softlink to the source package in our local package directory
-            string source = sourcePkg.directoryInfo.FullName;
-            string dest = $"{Application.dataPath}/../Packages/{sourcePkg.directoryInfo.Name}";
+            var source = sourcePkg.directoryInfo.FullName;
+            var dest = $"{Application.dataPath}/../Packages/{sourcePkg.directoryInfo.Name}";
             if (!ShellUtility.CreateSymbolicLink(source, dest))
             {
-              Debug.LogError("Create Sym Link Failed");
+              Debug.Log("Failed to create symbolic link.");
+              EditorApplication.Beep();
+            }
+            else
+            {
+              refreshAssets = true;
+              Debug.Log("Package Embed Complete");
             }
           }
           catch ( Exception e )
@@ -178,6 +185,13 @@ namespace Gameframe.Packages
       }
       EditorGUILayout.EndScrollView();
 
+      //Doing this outside of the foreach loop to avoid layout and enum errors
+      if (refreshAssets)
+      {
+        AssetDatabase.Refresh();
+        GUIUtility.ExitGUI();
+      }
+      
       RefreshGUI();
     }
 
