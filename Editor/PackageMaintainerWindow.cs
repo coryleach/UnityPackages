@@ -251,7 +251,10 @@ namespace Gameframe.Packages
         {
           Application.OpenURL(githubUrl);
         }
-        EditorGUILayout.LabelField(PackageUtility.PackageUrl(maintainPackageManifest.author.github,maintainPackageManifest.repositoryName,maintainPackageManifest.version));
+        var packageUrl = PackageUtility.PackageUrl(maintainPackageManifest.author.github,maintainPackageManifest.repositoryName,maintainPackageManifest.version);
+        if (GUILayout.Button(packageUrl, linkStyle))
+        {
+          Application.OpenURL(packageUrl);
       }
       
       EditorGUILayout.EndVertical();

@@ -2,14 +2,14 @@
   "name": "com.gameframe.packages",
   "version": "1.0.0",
   "displayName": "Gameframe.Packages",
-  "description": "Package for creating packages!",
+  "description": "Package for creating Unity packages just like this one!",
   "repositoryName": "UnityPackages",
   "author": {
     "name": "Cory Leach",
     "email": "cory.leach@gmail.com",
     "url": "https://github.com/coryleach",
-	"github": "coryleach",
-	"twitter": "coryleach"
+    "github": "coryleach",
+    "twitter": "coryleach"
   },
   "unity": "2019.3",
   "type": "tool"

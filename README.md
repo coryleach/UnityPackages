@@ -6,7 +6,7 @@
   </a>
 </p>
 
-Package for creating packages!
+Package for creating Unity packages just like this one!
 
 ## Quick Package Install
 
