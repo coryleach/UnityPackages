@@ -118,8 +118,6 @@ namespace Gameframe.Shell
 
       if (exitCode != 0)
       {
-        UnityEngine.Debug.LogError($"Exit Code {exitCode}");
-        UnityEngine.Debug.LogError(process.StandardError.ReadToEnd());
         return null;
       }
       
