@@ -23,7 +23,7 @@ namespace Gameframe.Packages
 
     private ScriptableObject target = null;
     private SerializedObject serializedObject = null;
-    private Vector2 scrollPt;
+    private Vector2 scrollPt = Vector2.zero;
     private string[] toolbar = {"Maintain", "Embed", "Create"};
     public int tab = 0;
     
@@ -159,18 +159,23 @@ namespace Gameframe.Packages
         }
         else if (GUILayout.Button("Embed", GUILayout.Width(60)))
         {
-          //Create a softlink to the source package in our local package directory
-          string source = sourcePkg.directoryInfo.FullName;
-          string dest = $"{Application.dataPath}/../Packages/{sourcePkg.directoryInfo.Name}";
-          if (!ShellUtility.CreateSymbolicLink(source, dest))
+          try
           {
-            Debug.LogError("Create Sym Link Failed");
+            //Create a softlink to the source package in our local package directory
+            string source = sourcePkg.directoryInfo.FullName;
+            string dest = $"{Application.dataPath}/../Packages/{sourcePkg.directoryInfo.Name}";
+            if (!ShellUtility.CreateSymbolicLink(source, dest))
+            {
+              Debug.LogError("Create Sym Link Failed");
+            }
+          }
+          catch ( Exception e )
+          {
+            Debug.LogException(e);
           }
         }
-
         EditorGUILayout.EndHorizontal();
       }
-
       EditorGUILayout.EndScrollView();
 
       RefreshGUI();
