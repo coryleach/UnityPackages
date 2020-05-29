@@ -35,7 +35,18 @@ Changes between 'DOC START' and 'DOC END' will not be lost on package update
 ## Usage
 
 Open the window using the gameframe menu.
-Gameframe->Packages->Maintainer
+
+Gameframe->Packages->Maintain
+The maintain tab displays and allows you to edit package manifest details
+It also has a button for updating the README file.
+
+Gameframe->Packages->Create
+The create tab is used for creating new packages.
+You can create packages either embeded in the Unity project or in the chosen source directory.
+
+Gameframe->Packages->Embed
+The embed tap will scan the source directory for packages.
+Clicking the 'embed' button on a package will create a softlink to the package in the project's Packages folder.
 
 <!-- DOC-END -->
 
