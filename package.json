@@ -1,6 +1,6 @@
 {
   "name": "com.gameframe.packages",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "displayName": "Gameframe.Packages",
   "description": "Package for creating Unity packages just like this one!",
   "repositoryName": "UnityPackages",
