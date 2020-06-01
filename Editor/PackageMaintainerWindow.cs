@@ -22,7 +22,8 @@ namespace Gameframe.Packages
     public string[] packageNames = new string[0];
     public List<SourcePackageInfo> sourcePackages = new List<SourcePackageInfo>();
     public int tab = 0;
-
+    public bool displayName = true;
+    
     private ScriptableObject target = null;
     private SerializedObject serializedObject = null;
     private Vector2 scrollPt;
@@ -62,6 +63,7 @@ namespace Gameframe.Packages
         }
       }
 
+      SortPackageList();
       CheckEmbededStatus();
     }
 
@@ -138,6 +140,18 @@ namespace Gameframe.Packages
       serializedObject.ApplyModifiedProperties();
     }
 
+    private void SortPackageList()
+    {
+      if (displayName)
+      {
+        sourcePackages.Sort((a,b)=>string.Compare(a.packageInfo.displayName, b.packageInfo.displayName, StringComparison.Ordinal));
+      }
+      else
+      {
+        sourcePackages.Sort((a,b)=>string.Compare(a.packageInfo.name, b.packageInfo.name, StringComparison.Ordinal));
+      }
+    }
+    
     private void EmbedPackageGUI()
     {
       if (PackageGuiUtility.SourcePathGui())
@@ -145,11 +159,27 @@ namespace Gameframe.Packages
         Refresh();
       }
 
+      EditorGUI.BeginChangeCheck();
+      displayName = EditorGUILayout.Toggle("ShowDisplayName", displayName);
+      if (EditorGUI.EndChangeCheck())
+      {
+        SortPackageList();
+      }
+      
       scrollPt = EditorGUILayout.BeginScrollView(scrollPt, GUILayout.ExpandHeight(false));
       foreach (var sourcePkg in sourcePackages)
       {
         EditorGUILayout.BeginHorizontal("box");
-        EditorGUILayout.LabelField(sourcePkg.packageInfo?.displayName);
+
+        if (displayName)
+        {
+          EditorGUILayout.LabelField(sourcePkg.packageInfo?.displayName);
+        }
+        else
+        {
+          EditorGUILayout.LabelField(sourcePkg.packageInfo?.name);
+        }
+        
         if (sourcePkg.status == SourcePackageInfo.Status.Error)
         {
           EditorGUILayout.LabelField("Error", GUILayout.Width(60));
