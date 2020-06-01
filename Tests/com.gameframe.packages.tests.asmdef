@@ -1,0 +1,17 @@
+{
+    "name": "com.gameframe.packages.tests",
+    "references": [
+        "GUID:8774ef0c0d363ae48b23b3dd950d3560"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}

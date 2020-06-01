@@ -27,11 +27,12 @@ namespace Gameframe.Shell
         WindowStyle = ProcessWindowStyle.Hidden
       };
 #else
-      var processInfo = new ProcessStartInfo("/bin/bash", command.Replace("\\","\\\\"))
+      var processInfo = new ProcessStartInfo("/bin/bash", $"-c \"{command.Replace("\\","\\\\")}\"")
       {
           CreateNoWindow = true,
           UseShellExecute = useShell,
-          RedirectStandardOutput = !useShell
+          RedirectStandardOutput = !useShell,
+          WindowStyle = ProcessWindowStyle.Hidden
       };
 #endif
 
@@ -44,7 +45,7 @@ namespace Gameframe.Shell
       process.WaitForExit();
       var exitCode = process.ExitCode;
       process.Close();
-
+      
       return exitCode == 0;
     }
 
@@ -94,11 +95,12 @@ namespace Gameframe.Shell
         RedirectStandardOutput = true
       };
 #else
-      var processInfo = new ProcessStartInfo("/bin/bash", command.Replace("\\","\\\\"))
+      var processInfo = new ProcessStartInfo("/bin/bash", $"-c \"{command.Replace("\\","\\\\")}\"")
       {
           CreateNoWindow = true,
           UseShellExecute = false,
-          RedirectStandardOutput = true
+          RedirectStandardOutput = true,
+          WindowStyle = ProcessWindowStyle.Hidden
       };
 #endif
 

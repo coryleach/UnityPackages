@@ -15,7 +15,7 @@ namespace Gameframe.Packages
 {
   public class PackageMaintainerWindow : EditorWindow
   {
-    
+
     public PackageManifest packageManifest = new PackageManifest();
     public List<PackageInfo> embededPackages = new List<PackageInfo>();
     public int selectedPackageIndex = 0;
@@ -23,12 +23,12 @@ namespace Gameframe.Packages
     public List<SourcePackageInfo> sourcePackages = new List<SourcePackageInfo>();
     public int tab = 0;
     public bool displayName = true;
-    
+
     private ScriptableObject target = null;
     private SerializedObject serializedObject = null;
-    private Vector2 scrollPt;
+    private Vector2 scrollPt = Vector2.zero;
     private readonly string[] toolbar = {"Maintain", "Embed", "Create"};
-    
+
     private void OnEnable()
     {
       target = this;
@@ -151,7 +151,7 @@ namespace Gameframe.Packages
         sourcePackages.Sort((a,b)=>string.Compare(a.packageInfo.name, b.packageInfo.name, StringComparison.Ordinal));
       }
     }
-    
+
     private void EmbedPackageGUI()
     {
       if (PackageGuiUtility.SourcePathGui())
@@ -165,7 +165,9 @@ namespace Gameframe.Packages
       {
         SortPackageList();
       }
-      
+
+      bool refreshAssets = false;
+
       scrollPt = EditorGUILayout.BeginScrollView(scrollPt, GUILayout.ExpandHeight(false));
       foreach (var sourcePkg in sourcePackages)
       {
@@ -179,7 +181,7 @@ namespace Gameframe.Packages
         {
           EditorGUILayout.LabelField(sourcePkg.packageInfo?.name);
         }
-        
+
         if (sourcePkg.status == SourcePackageInfo.Status.Error)
         {
           EditorGUILayout.LabelField("Error", GUILayout.Width(60));
@@ -190,51 +192,71 @@ namespace Gameframe.Packages
         }
         else if (GUILayout.Button("Embed", GUILayout.Width(60)))
         {
-          //Create a softlink to the source package in our local package directory
-          string source = sourcePkg.directoryInfo.FullName;
-          string dest = $"{Application.dataPath}/../Packages/{sourcePkg.directoryInfo.Name}";
-          if (!ShellUtility.CreateSymbolicLink(source, dest))
+          try
           {
-            Debug.LogError("Create Sym Link Failed");
+            //Create a softlink to the source package in our local package directory
+            var source = sourcePkg.directoryInfo.FullName;
+            var dest = $"{Application.dataPath}/../Packages/{sourcePkg.directoryInfo.Name}";
+            if (!ShellUtility.CreateSymbolicLink(source, dest))
+            {
+              EditorApplication.Beep();
+              EditorUtility.DisplayDialog("Package Embed", "Failed to create symbolic link. Package was not embedded.",
+                "OK");
+            }
+            else
+            {
+              refreshAssets = true;
+              EditorUtility.DisplayDialog("Package Embed", "Done",
+                "OK");
+            }
+          }
+          catch ( Exception e )
+          {
+            Debug.LogException(e);
           }
         }
-
         EditorGUILayout.EndHorizontal();
       }
-
       EditorGUILayout.EndScrollView();
+
+      //Doing this outside of the foreach loop to avoid layout and enum errors
+      if (refreshAssets)
+      {
+        AssetDatabase.Refresh();
+        GUIUtility.ExitGUI();
+      }
 
       RefreshGUI();
     }
 
     private PackageManifest maintainPackageManifest = null;
-    
+
     private void MaintainPackageGUI()
     {
       EditorGUI.BeginChangeCheck();
-      
+
       selectedPackageIndex = EditorGUILayout.Popup("Package", selectedPackageIndex, packageNames);
       if (EditorGUI.EndChangeCheck())
       {
         //Index Changed
         maintainPackageManifest = null;
       }
-      
+
       //Validate index
       if (selectedPackageIndex < 0 || selectedPackageIndex >= embededPackages.Count)
       {
         return;
       }
-      
+
       var package = embededPackages[selectedPackageIndex];
-      
+
       //Need to get the json for the package
       if (maintainPackageManifest == null)
       {
         var json = File.ReadAllText($"{package.assetPath}/package.json");
         maintainPackageManifest = JsonUtility.FromJson<PackageManifest>(json);
       }
-      
+
       var rect = EditorGUILayout.BeginVertical("box");
       EditorGUILayout.LabelField("Name",package.name);
       EditorGUILayout.LabelField("DisplayName",package.displayName);
@@ -245,13 +267,13 @@ namespace Gameframe.Packages
       EditorGUILayout.LabelField("Version",package.version);
       EditorGUILayout.LabelField("Status",package.status.ToString());
       EditorGUILayout.EndVertical();
-      
+
       if (Event.current.type == EventType.MouseUp && Event.current.button == 0 && rect.Contains(Event.current.mousePosition))
       {
         var asset = AssetDatabase.LoadAssetAtPath<TextAsset>($"{package.assetPath}/package.json");
         Selection.activeObject = asset;
       }
-      
+
       EditorGUILayout.BeginVertical("box");
       maintainPackageManifest.repositoryName = EditorGUILayout.TextField("RepositoryName", maintainPackageManifest.repositoryName);
       maintainPackageManifest.author.name = EditorGUILayout.TextField("Author Name",maintainPackageManifest.author.name);
@@ -260,12 +282,12 @@ namespace Gameframe.Packages
 
       maintainPackageManifest.author.twitter = EditorGUILayout.TextField("Twitter",maintainPackageManifest.author.twitter);
       maintainPackageManifest.author.github = EditorGUILayout.TextField("GitHub",maintainPackageManifest.author.github);
-      
+
       var linkStyle = new GUIStyle(EditorStyles.label);
       linkStyle.wordWrap = false;
       linkStyle.hover.textColor = new Color(0x00 / 255f, 0x78 / 255f, 0xDA / 255f, 1f);
       linkStyle.normal.textColor = new Color(0,0,1);
-      
+
       if (!string.IsNullOrEmpty(maintainPackageManifest.author.twitter))
       {
         var twitterUrl = PackageUtility.TwitterUrl(maintainPackageManifest.author.twitter);
@@ -274,7 +296,7 @@ namespace Gameframe.Packages
           Application.OpenURL(twitterUrl);
         }
       }
-      
+
       if (!string.IsNullOrEmpty(maintainPackageManifest.author.github))
       {
         var githubUrl = PackageUtility.GithubUrl(maintainPackageManifest.author.github);
@@ -288,9 +310,9 @@ namespace Gameframe.Packages
           Application.OpenURL(packageUrl);
         }
       }
-      
+
       EditorGUILayout.EndVertical();
-      
+
       if (GUILayout.Button("Update package.json"))
       {
         var path = $"{package.assetPath}/package.json";
@@ -305,12 +327,12 @@ namespace Gameframe.Packages
         File.WriteAllText(path,jsonNode.ToString());
         maintainPackageManifest = null;
       }
-      
+
       if (GUILayout.Button("Update Readme"))
       {
         UpdateReadme(package);
       }
-      
+
       RefreshGUI();
     }
 
@@ -360,18 +382,18 @@ namespace Gameframe.Packages
         Debug.LogError("Update package manifest with required values before updating the readme");
         return;
       }
-      
+
       var oldText = File.ReadAllText(readmePath);
       var templateText = File.ReadAllText(readmeTemplatePath);
       templateText = PackageUtility.PatchReadmeText(oldText, templateText);
 
       var readmeText = PackageUtility.CreateReadmeText(templateText, packageManifest);
-      
+
       File.WriteAllText(readmePath,readmeText);
 
       EditorUtility.DisplayDialog("Update Readme", "Done", "OK");
     }
-    
+
     private void RefreshGUI()
     {
       EditorGUILayout.BeginHorizontal();
@@ -389,7 +411,7 @@ namespace Gameframe.Packages
       {
         Refresh();
       }
-      
+
       var packageName = serializedObject.FindProperty("packageManifest.name");
       var packageDisplayName = serializedObject.FindProperty("packageManifest.displayName");
       var packageVersion = serializedObject.FindProperty("packageManifest.version");
@@ -430,9 +452,9 @@ namespace Gameframe.Packages
       EditorGUILayout.PropertyField(packageAuthorUrl);
       EditorGUILayout.PropertyField(packageAuthorTwitter);
       EditorGUILayout.PropertyField(packageAuthorGithub);
-      
+
       GUILayout.EndVertical();
-      
+
       EditorGUILayout.Space();
 
       EditorGUILayout.BeginHorizontal();
@@ -511,7 +533,7 @@ namespace Gameframe.Packages
 
       var readmeTemplatePath = $"{myPkgInfo.assetPath}/Template/README_TEMPLATE.md";
       var licenseTemplatePath = $"{myPkgInfo.assetPath}/Template/Licenses/MIT LICENSE";
-      
+
       if (!Directory.Exists(path))
       {
         EditorUtility.DisplayDialog("Error", "Unable to locate packages directory.", "OK");
@@ -539,7 +561,7 @@ namespace Gameframe.Packages
 
       var readmeText = PackageUtility.CreateReadmeText(readmeTemplatePath, packageManifest);
       var licenseText = PackageUtility.CreateLicenseText(File.ReadAllText(licenseTemplatePath),packageManifest);
-      
+
       File.WriteAllText(manifestPath, json);
       File.WriteAllText(readmePath, readmeText);
       File.WriteAllText(licensePath, licenseText);
