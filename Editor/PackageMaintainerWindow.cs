@@ -15,17 +15,18 @@ namespace Gameframe.Packages
 {
   public class PackageMaintainerWindow : EditorWindow
   {
+    
     public PackageManifest packageManifest = new PackageManifest();
     public List<PackageInfo> embededPackages = new List<PackageInfo>();
     public int selectedPackageIndex = 0;
     public string[] packageNames = new string[0];
     public List<SourcePackageInfo> sourcePackages = new List<SourcePackageInfo>();
+    public int tab = 0;
 
     private ScriptableObject target = null;
     private SerializedObject serializedObject = null;
     private Vector2 scrollPt;
-    private string[] toolbar = {"Maintain", "Embed", "Create"};
-    public int tab = 0;
+    private readonly string[] toolbar = {"Maintain", "Embed", "Create"};
     
     private void OnEnable()
     {
@@ -102,8 +103,6 @@ namespace Gameframe.Packages
       packageNames = embededPackages.Select(x => x.displayName).ToArray();
       CheckEmbededStatus();
       EditorUtility.SetDirty(this);
-
-      
     }
 
     private async Task<PackageInfo> GetMyPackageInfoAsync()
@@ -122,6 +121,7 @@ namespace Gameframe.Packages
 
     private void OnGUI()
     {
+      serializedObject.Update();
       tab = GUILayout.Toolbar(tab, toolbar);
       switch (tab)
       {
@@ -135,6 +135,7 @@ namespace Gameframe.Packages
           CreatePackageGUI();
           break;
       }
+      serializedObject.ApplyModifiedProperties();
     }
 
     private void EmbedPackageGUI()
@@ -401,9 +402,7 @@ namespace Gameframe.Packages
       EditorGUILayout.PropertyField(packageAuthorGithub);
       
       GUILayout.EndVertical();
-
-      serializedObject.ApplyModifiedProperties();
-
+      
       EditorGUILayout.Space();
 
       EditorGUILayout.BeginHorizontal();
@@ -538,6 +537,6 @@ namespace Gameframe.Packages
       EditorUtility.DisplayDialog("Package Created", "Done!", "Ok");
       Refresh();
     }
-    
+
   }
 }
