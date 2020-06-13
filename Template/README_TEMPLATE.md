@@ -1,10 +1,10 @@
 <h1 align="center">{PACKAGE.DISPLAYNAME} 👋</h1>
-<p>
-  <img alt="Version" src="https://img.shields.io/badge/version-{PACKAGE.VERSION}-blue.svg?cacheSeconds=2592000" />
-  <a href="https://twitter.com/{AUTHOR.TWITTER}">
-    <img alt="Twitter: {TWITTER.USERNAME}" src="https://img.shields.io/twitter/follow/{TWITTER.USERNAME}.svg?style=social" target="_blank" />
-  </a>
-</p>
+
+<!-- BADGE-START -->
+![version](https://img.shields.io/github/package-json/v/{GITHUB.USERNAME}/{PACKAGE.REPOSITORYNAME})
+[![license](https://img.shields.io/github/license/{GITHUB.USERNAME}/{PACKAGE.REPOSITORYNAME})](https://github.com/{GITHUB.USERNAME}/{PACKAGE.REPOSITORYNAME}/blob/master/LICENSE)
+[![twitter](https://img.shields.io/twitter/follow/{TWITTER.USERNAME}.svg?style=social)](https://twitter.com/{TWITTER.USERNAME})
+<!-- BADGE-END -->
 
 {PACKAGE.DESCRIPTION}
 

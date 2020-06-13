@@ -7,11 +7,24 @@ namespace Gameframe.Packages
     {
         private const string StartDocTag = "<!-- DOC-START -->";
         private const string EndDocTag = "<!-- DOC-END -->";
+        
+        private const string StartBadgeTag = "<!-- BADGE-START -->";
+        private const string EndBadgeTag = "<!-- BADGE-END -->";
     
-        public static string ExtractText(string text)
+        public static string ExtractDocText(string text)
         {
-            var startIndex = text.IndexOf(StartDocTag, StringComparison.Ordinal) + StartDocTag.Length;
-            var endIndex = text.IndexOf(EndDocTag, startIndex, StringComparison.Ordinal);
+            return ExtractText(text, StartDocTag, EndDocTag);
+        }
+        
+        public static string ExtractBadgeText(string text)
+        {
+            return ExtractText(text, StartBadgeTag, EndBadgeTag);
+        }
+        
+        private static string ExtractText(string text, string startTag, string endTag)
+        {
+            var startIndex = text.IndexOf(startTag, StringComparison.Ordinal) + StartDocTag.Length;
+            var endIndex = text.IndexOf(endTag, startIndex, StringComparison.Ordinal);
       
             if (startIndex == -1 || endIndex == -1)
             {
@@ -24,11 +37,19 @@ namespace Gameframe.Packages
         public static string PatchReadmeText(string oldReadmeText, string templateText)
         {
             //Extract Documenation from old readme
-            oldReadmeText = ExtractText(oldReadmeText);
+            var currentDocText = ExtractDocText(oldReadmeText);
             //Find the replace-able text in the template
-            var replaceableText = ExtractText(templateText);
+            var replaceableDocText = ExtractDocText(templateText);
+            
             //Insert old readme text into the template
-            return templateText.Replace(replaceableText, oldReadmeText);
+            var newReadmeText = templateText.Replace(replaceableDocText, currentDocText);
+
+            var currentBadgeText = ExtractBadgeText(oldReadmeText);
+            var replaceableBadgeText = ExtractBadgeText(oldReadmeText);
+            
+            newReadmeText = templateText.Replace(replaceableBadgeText, currentBadgeText);
+            
+            return newReadmeText;
         }
 
         public static string CreateLicenseText(string licenseText, PackageManifest packageManifest)
@@ -68,6 +89,7 @@ namespace Gameframe.Packages
             readmeText.Replace("{AUTHOR.NAME}",packageManifest.author.name);
             readmeText.Replace("{GITHUB.USERNAME}",packageManifest.author.github);
             readmeText.Replace("{PACKAGE.VERSION}",packageManifest.version);
+            readmeText.Replace("{PACKAGE.REPOSITORYNAME}",packageManifest.repositoryName);
             readmeText.Replace("{PACKAGE.DESCRIPTION}",description);
             readmeText.Replace("{PACKAGE.DISPLAYNAME}",packageManifest.displayName);
             readmeText.Replace("{PACKAGE.NAME}",packageManifest.name);

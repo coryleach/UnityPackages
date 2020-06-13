@@ -9,13 +9,14 @@ using Gameframe.Shell;
 using UnityEditor;
 using UnityEditor.PackageManager;
 using UnityEngine;
+
 using PackageInfo = UnityEditor.PackageManager.PackageInfo;
 
 namespace Gameframe.Packages
 {
   public class PackageMaintainerWindow : EditorWindow
   {
-
+    
     public PackageManifest packageManifest = new PackageManifest();
     public List<PackageInfo> embededPackages = new List<PackageInfo>();
     public int selectedPackageIndex = 0;
@@ -29,6 +30,13 @@ namespace Gameframe.Packages
     private Vector2 scrollPt = Vector2.zero;
     private readonly string[] toolbar = {"Maintain", "Embed", "Create"};
 
+    /*
+    [SerializeField] private bool codacyLicense = true;
+    [SerializeField] private bool badgeVersion = true;
+    [SerializeField] private bool badgeLicense = true;
+    [SerializeField] private bool badgeTravisCi = false;
+    */
+      
     private void OnEnable()
     {
       target = this;
