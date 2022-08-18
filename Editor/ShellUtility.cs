@@ -45,7 +45,7 @@ namespace Gameframe.Shell
       process.WaitForExit();
       var exitCode = process.ExitCode;
       process.Close();
-      
+
       return exitCode == 0;
     }
 
@@ -76,7 +76,7 @@ namespace Gameframe.Shell
 
       return exitCode == 0;
     }
-    
+
     /// <summary>
     /// Get the string output of a command in the shell
     /// </summary>
@@ -120,12 +120,12 @@ namespace Gameframe.Shell
       {
         return null;
       }
-      
+
       if (trimOutput)
       {
         output = output.TrimEnd('\n','\r');
       }
-      
+
       return  output;
     }
 
@@ -167,9 +167,9 @@ namespace Gameframe.Shell
 #if UNITY_EDITOR_WIN
       return ExecuteWindowsCommand($"mklink /D \"{destination}\" \"{source}\"");
 #else
-      return ExecuteCommand($"ln -s {source} {destination}");
+      return ExecuteCommand($"ln -s '{source}' '{destination}'");
 #endif
     }
-    
+
   }
 }
