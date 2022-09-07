@@ -48,7 +48,6 @@ Changes between 'DOC START' and 'DOC END' will not be modified by readme update 
 
 ## Show your support
 Give a ⭐️ if this project helped you!
-
 {AUTHOR.KOFI}
 
 ***
