@@ -16,11 +16,11 @@ namespace Gameframe.Packages
 {
   public class PackageMaintainerWindow : EditorWindow
   {
-    
+
     public PackageManifest packageManifest = new PackageManifest();
     public List<PackageInfo> embededPackages = new List<PackageInfo>();
     public int selectedPackageIndex = 0;
-    public string[] packageNames = new string[0];
+    public string[] packageNames = Array.Empty<string>();
     public List<SourcePackageInfo> sourcePackages = new List<SourcePackageInfo>();
     public int tab = 0;
     public bool displayName = true;
@@ -36,7 +36,7 @@ namespace Gameframe.Packages
     [SerializeField] private bool badgeLicense = true;
     [SerializeField] private bool badgeTravisCi = false;
     */
-      
+
     private void OnEnable()
     {
       target = this;
@@ -287,14 +287,22 @@ namespace Gameframe.Packages
       maintainPackageManifest.author.name = EditorGUILayout.TextField("Author Name",maintainPackageManifest.author.name);
       maintainPackageManifest.author.email = EditorGUILayout.TextField("Author E-Mail",maintainPackageManifest.author.email);
       maintainPackageManifest.author.url = EditorGUILayout.TextField("Author URL",maintainPackageManifest.author.url);
-
       maintainPackageManifest.author.twitter = EditorGUILayout.TextField("Twitter",maintainPackageManifest.author.twitter);
       maintainPackageManifest.author.github = EditorGUILayout.TextField("GitHub",maintainPackageManifest.author.github);
+      maintainPackageManifest.author.kofi = EditorGUILayout.TextField("Ko-fi URL", maintainPackageManifest.author.kofi);
 
-      var linkStyle = new GUIStyle(EditorStyles.label);
-      linkStyle.wordWrap = false;
-      linkStyle.hover.textColor = new Color(0x00 / 255f, 0x78 / 255f, 0xDA / 255f, 1f);
-      linkStyle.normal.textColor = new Color(0,0,1);
+      var linkStyle = new GUIStyle(EditorStyles.label)
+      {
+        wordWrap = false,
+        hover =
+        {
+          textColor = new Color(0x00 / 255f, 0x78 / 255f, 0xDA / 255f, 1f)
+        },
+        normal =
+        {
+          textColor = new Color(1,1,1)
+        }
+      };
 
       if (!string.IsNullOrEmpty(maintainPackageManifest.author.twitter))
       {
@@ -319,6 +327,14 @@ namespace Gameframe.Packages
         }
       }
 
+      if (!string.IsNullOrEmpty(maintainPackageManifest.author.kofi))
+      {
+        if (GUILayout.Button(maintainPackageManifest.author.kofi, linkStyle))
+        {
+          Application.OpenURL(maintainPackageManifest.author.kofi);
+        }
+      }
+
       EditorGUILayout.EndVertical();
 
       if (GUILayout.Button("Update package.json"))
@@ -332,6 +348,7 @@ namespace Gameframe.Packages
         jsonNode["author"]["url"] = maintainPackageManifest.author.url;
         jsonNode["author"]["github"] = maintainPackageManifest.author.github;
         jsonNode["author"]["twitter"] = maintainPackageManifest.author.twitter;
+        jsonNode["author"]["kofi"] = maintainPackageManifest.author.kofi;
         File.WriteAllText(path,jsonNode.ToString());
         maintainPackageManifest = null;
       }
@@ -433,6 +450,7 @@ namespace Gameframe.Packages
       var packageAuthorUrl = serializedObject.FindProperty("packageManifest.author.url");
       var packageAuthorGithub = serializedObject.FindProperty("packageManifest.author.twitter");
       var packageAuthorTwitter = serializedObject.FindProperty("packageManifest.author.github");
+      var packageAuthorKofi = serializedObject.FindProperty("packageManifest.author.kofi");
 
       GUILayout.BeginVertical("box");
 
@@ -460,6 +478,7 @@ namespace Gameframe.Packages
       EditorGUILayout.PropertyField(packageAuthorUrl);
       EditorGUILayout.PropertyField(packageAuthorTwitter);
       EditorGUILayout.PropertyField(packageAuthorGithub);
+      EditorGUILayout.PropertyField(packageAuthorKofi);
 
       GUILayout.EndVertical();
 

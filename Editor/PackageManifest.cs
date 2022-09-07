@@ -13,6 +13,7 @@ namespace Gameframe.Packages
       public string url = "";
       public string twitter = "";
       public string github = "";
+      public string kofi = "";
     }
 
     public string githubUrl = "";
@@ -21,7 +22,7 @@ namespace Gameframe.Packages
     public string repositoryName = "";
     public string version = "";
     public string description = "";
-    public string type = ""; //tool, module, tests, sample, template, library 
+    public string type = ""; //tool, module, tests, sample, template, library
     public string unity = "";
     public string unityRelease = "";
     public string[] keywords = new string[0];

@@ -31,7 +31,7 @@ Find the manifest.json file in the Packages folder of your project and edit it t
 ```
 
 <!-- DOC-START -->
-<!-- 
+<!--
 Changes between 'DOC START' and 'DOC END' will not be modified by readme update scripts
 -->
 
@@ -49,6 +49,7 @@ Changes between 'DOC START' and 'DOC END' will not be modified by readme update 
 ## Show your support
 
 Give a ⭐️ if this project helped you!
+{AUTHOR.KOFI}
 
 ***
 _This README was generated with ❤️ by [Gameframe.Packages](https://github.com/coryleach/unitypackages)_

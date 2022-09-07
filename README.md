@@ -1,10 +1,9 @@
-<h1 align="center">Gameframe.Packages 👋</h1>
-<p>
-  <img alt="Version" src="https://img.shields.io/badge/version-1.0.2-blue.svg?cacheSeconds=2592000" />
-  <a href="https://twitter.com/Cory Leach">
-    <img alt="Twitter: coryleach" src="https://img.shields.io/twitter/follow/coryleach.svg?style=social" target="_blank" />
-  </a>
+<p align="center">
+<img align="center" src="https://raw.githubusercontent.com/coryleach/UnityPackages/master/Documentation/GameframeFace.gif" />
 </p>
+<h1 align="center">Gameframe.Packages 👋</h1>
+
+<!-- BADGE-START -<!-- BADGE-END -->
 
 Package for creating Unity packages just like this one!
 
@@ -61,6 +60,9 @@ Clicking the 'embed' button on a package will create a softlink to the package i
 ## Show your support
 
 Give a ⭐️ if this project helped you!
+If this is useful to you and/or you’d like to see future development and more tools in the future, please consider supporting it either by contributing to the Github projects (submitting bug reports or features and/or creating pull requests) or by buying me coffee using any of the links below. Every little bit helps!
+[![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/coryleach)
+
 
 ***
 _This README was generated with ❤️ by [Gameframe.Packages](https://github.com/coryleach/unitypackages)_

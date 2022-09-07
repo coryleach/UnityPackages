@@ -9,23 +9,23 @@ namespace Gameframe.Packages.Editor
             get => EditorPrefs.GetString("PackageSourcePath");
             set => EditorPrefs.SetString("PackageSourcePath", value);
         }
-        
-        private static PackageManifest manifest = new PackageManifest();
+
+        private static PackageManifest _manifest = new PackageManifest();
         public static PackageManifest Manifest
         {
-            get => manifest ?? (manifest = new PackageManifest());
-            set => manifest = value;
+            get => _manifest ??= new PackageManifest();
+            set => _manifest = value;
         }
 
         public static void Load()
         {
-            
+
         }
 
         public static void Save()
         {
-            
+
         }
-        
-    }  
+
+    }
 }
