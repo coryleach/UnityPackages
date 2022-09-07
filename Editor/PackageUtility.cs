@@ -114,7 +114,7 @@ namespace Gameframe.Packages
             if (!string.IsNullOrEmpty(packageManifest.author.kofi))
             {
                 support.AppendLine("<br />");
-                support.AppendLine("If this is useful to you and/or you’d like to see future development and more tools in the future, please consider supporting it either by contributing to the Github projects (submitting bug reports or features and/or creating pull requests) or by buying me coffee using any of the links below. Every little bit helps!");
+                support.AppendLine("Please consider supporting it either by contributing to the Github projects (submitting bug reports or features and/or creating pull requests) or by buying me coffee using any of the links below. Every little bit helps!");
                 support.AppendLine("<br />\n");
                 support.AppendLine($"[![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)]({packageManifest.author.kofi})");
             }
