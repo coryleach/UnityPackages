@@ -3,6 +3,11 @@
 </p>
 <h1 align="center">Gameframe.Packages 👋</h1>
 
+<!-- BADGE-START ->
+<img align="center" src="https://raw.githubusercontent.com/coryleach/UnityPackages/master/Documentation/GameframeFace.gif" />
+</p>
+<h1 align="center">Gameframe.Packages 👋</h1>
+
 <!-- BADGE-START -<!-- BADGE-END -->
 
 Package for creating Unity packages just like this one!
@@ -58,9 +63,11 @@ Clicking the 'embed' button on a package will create a softlink to the package i
 
 
 ## Show your support
-
 Give a ⭐️ if this project helped you!
+
+<br />
 If this is useful to you and/or you’d like to see future development and more tools in the future, please consider supporting it either by contributing to the Github projects (submitting bug reports or features and/or creating pull requests) or by buying me coffee using any of the links below. Every little bit helps!
+<br />
 [![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/coryleach)
 
 
