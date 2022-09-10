@@ -273,7 +273,6 @@ namespace Gameframe.Packages
       EditorGUILayout.LabelField("Resolved Path",package.resolvedPath);
       EditorGUILayout.LabelField("Type",package.type);
       EditorGUILayout.LabelField("Version",package.version);
-      EditorGUILayout.LabelField("Status",package.status.ToString());
       EditorGUILayout.EndVertical();
 
       if (Event.current.type == EventType.MouseUp && Event.current.button == 0 && rect.Contains(Event.current.mousePosition))
