@@ -64,11 +64,20 @@ namespace Gameframe.Packages
       foreach (var directory in directories)
       {
         //Check each directory for a package manifest
-        if (File.Exists($"{directory}/package.json"))
+        if (!File.Exists($"{directory}/package.json"))
         {
-          var pkgInfo = new SourcePackageInfo(directory);
-          sourcePackages.Add(pkgInfo);
+          continue;
         }
+
+        //Make sure it is a Unity project by checking for a .meta file
+        var files = Directory.GetFiles(directory);
+        if (!files.Any(x => x.EndsWith(".meta")))
+        {
+          continue;
+        }
+
+        var pkgInfo = new SourcePackageInfo(directory);
+        sourcePackages.Add(pkgInfo);
       }
 
       SortPackageList();
@@ -181,6 +190,8 @@ namespace Gameframe.Packages
       {
         EditorGUILayout.BeginHorizontal("box");
 
+        EditorGUILayout.BeginVertical();
+
         if (displayName)
         {
           EditorGUILayout.LabelField(sourcePkg.packageInfo?.displayName);
@@ -189,6 +200,10 @@ namespace Gameframe.Packages
         {
           EditorGUILayout.LabelField(sourcePkg.packageInfo?.name);
         }
+
+        EditorGUILayout.LabelField(sourcePkg.directoryInfo.FullName);
+
+        EditorGUILayout.EndVertical();
 
         if (sourcePkg.status == SourcePackageInfo.Status.Error)
         {
