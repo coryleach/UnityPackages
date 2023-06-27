@@ -13,7 +13,7 @@ namespace Gameframe.Packages.Editor
         private static PackageManifest _manifest = new PackageManifest();
         public static PackageManifest Manifest
         {
-            get => _manifest ??= new PackageManifest();
+            get => _manifest ?? (_manifest = new PackageManifest());
             set => _manifest = value;
         }
 
